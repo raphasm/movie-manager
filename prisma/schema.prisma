@@ -13,7 +13,8 @@ model User {
   email    String @unique
   password String
 
-  movies Movie[]
+  movies      Movie[]
+  evaluations Evaluation[]
 
   @@map("users")
 }
@@ -24,11 +25,26 @@ model Movie {
   year        String
   category    String
   description String
-  rating      Int
   filename    String
 
-  user    User   @relation(fields: [user_Id], references: [id])
-  user_Id String
+  user        User         @relation(fields: [user_id], references: [id])
+  user_id     String
+  evaluations Evaluation[]
 
   @@map("movies")
+}
+
+model Evaluation {
+  id         String   @id @default(uuid())
+  rating     Int
+  comment    String?
+  created_at DateTime @default(now())
+
+  movie Movie @relation(fields: [movie_id], references: [id])
+  user  User  @relation(fields: [user_id], references: [id])
+
+  movie_id String
+  user_id  String
+
+  @@map("evaluations")
 }

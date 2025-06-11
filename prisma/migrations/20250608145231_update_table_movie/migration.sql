@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "movies" ALTER COLUMN "rating" DROP NOT NULL,
+ALTER COLUMN "rating" SET DEFAULT 0;
