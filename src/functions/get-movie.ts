@@ -6,6 +6,19 @@ interface GetMovieParams {
 
 export async function getMovie({ movieId }: GetMovieParams) {
   const movie = await prisma.movie.findUnique({
+    select: {
+      id: true,
+      title: true,
+      year: true,
+      category: true,
+      description: true,
+      filename: true,
+      _count: {
+        select: {
+          evaluations: true,
+        },
+      },
+    },
     where: {
       id: movieId,
     },

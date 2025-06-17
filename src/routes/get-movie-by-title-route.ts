@@ -1,23 +1,23 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 import { verifyJwt } from '../middlewares/verify-jwt'
-import { getMyMovies } from '../functions/get-my-movies'
+import { getMovieByTitle } from '../functions/get-movie-by-title'
 
-export const getMyMoviesRoute: FastifyPluginAsyncZod = async (app) => {
+export const getMovieByTitleRoute: FastifyPluginAsyncZod = async (app) => {
   app.get(
-    '/my-movies',
+    '/movies/search',
     {
       preHandler: [verifyJwt],
       schema: {
         querystring: z.object({
+          query: z.coerce.string(),
           page: z.coerce.number().min(1).default(1),
         }),
         response: {
           200: z.object({
             movies: z.array(
               z.object({
-                averageRating: z.number().nullable(),
-                id: z.string(),
+                id: z.string().uuid(),
                 title: z.string(),
                 year: z.string(),
                 category: z.string(),
@@ -30,10 +30,9 @@ export const getMyMoviesRoute: FastifyPluginAsyncZod = async (app) => {
       },
     },
     async (request, reply) => {
-      const { page } = request.query
-      const userId = request.user.sub
+      const { query, page } = request.query
 
-      const { movies } = await getMyMovies({ userId, page })
+      const { movies } = await getMovieByTitle({ query, page })
 
       return reply.status(200).send({ movies })
     },

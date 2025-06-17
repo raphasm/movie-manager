@@ -21,6 +21,7 @@ export const getMovieRoute: FastifyPluginAsyncZod = async (app) => {
               category: z.string(),
               description: z.string(),
               filename: z.string(),
+              ratingCount: z.number().int(),
             }),
           }),
         },
@@ -31,7 +32,17 @@ export const getMovieRoute: FastifyPluginAsyncZod = async (app) => {
 
       const { movie } = await getMovie({ movieId })
 
-      return reply.status(200).send({ movie })
+      return reply.status(200).send({
+        movie: {
+          id: movie.id,
+          title: movie.title,
+          year: movie.year,
+          category: movie.category,
+          description: movie.description,
+          filename: movie.filename,
+          ratingCount: movie._count.evaluations,
+        },
+      })
     },
   )
 }

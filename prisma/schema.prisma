@@ -20,12 +20,13 @@ model User {
 }
 
 model Movie {
-  id          String @id @default(uuid())
-  title       String
-  year        String
-  category    String
-  description String
-  filename    String
+  id            String @id @default(uuid())
+  title         String
+  year          String
+  category      String
+  description   String
+  filename      String
+  averageRating Int    @default(0)
 
   user        User         @relation(fields: [user_id], references: [id])
   user_id     String
@@ -36,7 +37,7 @@ model Movie {
 
 model Evaluation {
   id         String   @id @default(uuid())
-  rating     Int
+  rating     Int?
   comment    String?
   created_at DateTime @default(now())
 
