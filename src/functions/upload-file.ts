@@ -8,6 +8,9 @@ import uploadConfig from '../configs/upload'
 const pump = promisify(pipeline)
 
 export async function uploadFile(data: any) {
+  if (!uploadConfig.ACCEPTED_IMAGE_TYPES.includes(data.mimetype)) {
+    throw new Error('Tipo de arquivo não suportado')
+  }
   // Gera um nome único para o arquivo
   const fileHash = crypto.randomBytes(10).toString('hex')
   const fileName = `${fileHash}-${data.filename}`

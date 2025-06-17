@@ -19,17 +19,31 @@ export const uploadsFileRoute: FastifyPluginAsyncZod = async (app) => {
       },
     },
     async (request, reply) => {
-      const diskStorage = new DiskStorage()
+      try {
+        const data = await request.file()
 
-      const data = await request.file()
+        if (!data) {
+          return reply.status(400).send({ error: 'No file uploaded' })
+        }
 
-      if (!data) {
-        throw new Error('No file uploaded')
+        const fileInfo = await uploadFile(data)
+
+        return reply.status(201).send([{ filename: fileInfo.filename }])
+      } catch (error) {
+        return reply
+          .status(400)
+          .send({ error: error.message || 'Erro no upload' })
       }
 
-      const fileInfo = await uploadFile(data)
+      // const data = await request.file()
 
-      return reply.status(201).send([{ filename: fileInfo.filename }])
+      // if (!data) {
+      //   throw new Error('No file uploaded')
+      // }
+
+      // const fileInfo = await uploadFile(data)
+
+      // return reply.status(201).send([{ filename: fileInfo.filename }])
     },
   )
 }
