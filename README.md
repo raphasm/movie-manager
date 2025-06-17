@@ -15,7 +15,7 @@ Movie Manager app.
 - [x] Deve ser possível fazer a paginação de 10 items por página;
 - [x] Deve ser possível adicionar uma avaliação para um filme;
 - [x] Deve ser possível visualizar uma avaliação de um filme;
-- [] Deve ser possível adicionar uma imagem para esse filme;
+- [x] Deve ser possível adicionar uma imagem para esse filme;
 
 ## RNs (Regras de negócio)
 
