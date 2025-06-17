@@ -17,11 +17,11 @@ import { getEvaluationsRoute } from './routes/get-evaluations-route'
 import { ratingsRoute } from './routes/ratings-route'
 import fastifyMultipart from '@fastify/multipart'
 import { uploadsFileRoute } from './routes/upload-file-route'
-
+import uploadConfig from './configs/upload'
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
 app.register(fastifyMultipart, {
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: uploadConfig.MAX_FILE_SIZE }, // 3MB
   // attachFieldsToBody: true,
   // sharedSchemaId: '#mySharedSchema',
 })
