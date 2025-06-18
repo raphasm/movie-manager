@@ -5,6 +5,7 @@ import {
   serializerCompiler,
   validatorCompiler,
   ZodTypeProvider,
+  jsonSchemaTransform,
 } from 'fastify-type-provider-zod'
 import { createMoviesRoute } from './routes/create-movies-route'
 import fastifyJwt from '@fastify/jwt'
@@ -18,16 +19,53 @@ import { ratingsRoute } from './routes/ratings-route'
 import fastifyMultipart from '@fastify/multipart'
 import { uploadsFileRoute } from './routes/upload-file-route'
 import uploadConfig from './configs/upload'
+import fastifySwagger from '@fastify/swagger'
+import fastifySwaggerUi from '@fastify/swagger-ui'
+import { pipeline } from 'stream'
+
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
+// async function onFile(part:any) {
+//   // you have access to original request via `this`
+//   console.log(this.id)
+//   await pipeline(part.file, fs.createWriteStream(part.filename))
+// }
 app.register(fastifyMultipart, {
-  limits: { fileSize: uploadConfig.MAX_FILE_SIZE }, // 3MB
-  // attachFieldsToBody: true,
-  // sharedSchemaId: '#mySharedSchema',
+  limits: { fileSize: uploadConfig.MAX_FILE_SIZE },
+  // attachFieldsToBody: 'keyValues',
 })
 
 app.register(fastifyJwt, {
   secret: env.JWT_SECRET,
+})
+
+app.register(fastifySwagger, {
+  openapi: {
+    info: {
+      title: 'movie.manager',
+      description: 'Especificação da API e das rotas feitas.',
+      version: '1.0.0',
+    },
+
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  },
+  transform: jsonSchemaTransform,
+})
+
+app.register(fastifySwaggerUi, {
+  routePrefix: '/docs',
+  uiConfig: {
+    persistAuthorization: true,
+  },
 })
 
 app.setSerializerCompiler(serializerCompiler)

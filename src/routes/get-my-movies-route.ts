@@ -9,6 +9,8 @@ export const getMyMoviesRoute: FastifyPluginAsyncZod = async (app) => {
     {
       preHandler: [verifyJwt],
       schema: {
+        summary: 'Get my movies',
+        tags: ['movie'],
         querystring: z.object({
           page: z.coerce.number().min(1).default(1),
         }),

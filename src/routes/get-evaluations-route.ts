@@ -9,6 +9,8 @@ export const getEvaluationsRoute: FastifyPluginAsyncZod = async (app) => {
     {
       preHandler: [verifyJwt],
       schema: {
+        summary: 'Get evaluations',
+        tags: ['evaluations'],
         params: z.object({
           movieId: z.string(),
         }),

@@ -1,0 +1,4 @@
+- [] fazer a documentação com o swagger
+- [] criar seed no banco de dados
+- []
+- []

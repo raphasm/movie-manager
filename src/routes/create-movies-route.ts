@@ -9,6 +9,8 @@ export const createMoviesRoute: FastifyPluginAsyncZod = async (app) => {
     {
       preHandler: [verifyJwt],
       schema: {
+        summary: 'Create movies',
+        tags: ['movie'],
         body: z.object({
           title: z.string(),
           year: z.string(),

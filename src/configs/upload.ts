@@ -27,7 +27,6 @@ const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png']
 export default {
   TMP_FOLDER,
   UPLOADS_FOLDER,
-  // MULTER,
   MAX_FILE_SIZE,
   ACCEPTED_IMAGE_TYPES,
 }
