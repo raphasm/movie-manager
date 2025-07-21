@@ -17,11 +17,13 @@ export const getEvaluationsRoute: FastifyPluginAsyncZod = async (app) => {
         response: {
           200: z.array(
             z.object({
+              id: z.string(),
               title: z.string(),
               year: z.string(),
               category: z.string(),
               description: z.string(),
               filename: z.string(),
+              averageRating: z.coerce.number(),
               evaluations: z.array(
                 z.object({
                   name: z.string(),
@@ -40,14 +42,16 @@ export const getEvaluationsRoute: FastifyPluginAsyncZod = async (app) => {
       const { evaluations } = await getEvaluations({ movieId })
 
       const mappedEvaluations = evaluations.map((movie) => ({
+        id: movie.id,
         title: movie.title,
         year: movie.year,
         category: movie.category,
         description: movie.description,
         filename: movie.filename,
+        averageRating: Number(movie.averageRating),
         evaluations: movie.evaluations.map((evaluation) => ({
           name: evaluation.user.name,
-          rating: evaluation.rating,
+          rating: Number(evaluation.rating),
           comment: evaluation.comment,
         })),
       }))

@@ -20,13 +20,13 @@ model User {
 }
 
 model Movie {
-  id            String @id @default(uuid())
+  id            String   @id @default(uuid())
   title         String
   year          String
   category      String
   description   String
   filename      String
-  averageRating Int    @default(0)
+  averageRating Decimal? @default(0) @db.Decimal(2, 1)
 
   user        User         @relation(fields: [user_id], references: [id])
   user_id     String
@@ -37,7 +37,7 @@ model Movie {
 
 model Evaluation {
   id         String   @id @default(uuid())
-  rating     Int?
+  rating     Decimal? @db.Decimal(2, 1)
   comment    String?
   created_at DateTime @default(now())
 

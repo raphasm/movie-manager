@@ -8,9 +8,6 @@ export const ratingsRoute: FastifyPluginAsyncZod = async (app) => {
     '/ratings',
     {
       schema: {
-        // params: z.object({
-        //   movieId: z.string(),
-        // }),
         response: {
           201: z.array(
             z.object({

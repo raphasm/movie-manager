@@ -21,19 +21,14 @@ import { uploadsFileRoute } from './routes/upload-file-route'
 import uploadConfig from './configs/upload'
 import fastifySwagger from '@fastify/swagger'
 import fastifySwaggerUi from '@fastify/swagger-ui'
-import { pipeline } from 'stream'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
-
-// async function onFile(part:any) {
-//   // you have access to original request via `this`
-//   console.log(this.id)
-//   await pipeline(part.file, fs.createWriteStream(part.filename))
-// }
 app.register(fastifyMultipart, {
   limits: { fileSize: uploadConfig.MAX_FILE_SIZE },
-  // attachFieldsToBody: 'keyValues',
+  attachFieldsToBody: true,
 })
+app.setSerializerCompiler(serializerCompiler)
+app.setValidatorCompiler(validatorCompiler)
 
 app.register(fastifyJwt, {
   secret: env.JWT_SECRET,
@@ -41,6 +36,7 @@ app.register(fastifyJwt, {
 
 app.register(fastifySwagger, {
   openapi: {
+    openapi: '3.0.3',
     info: {
       title: 'movie.manager',
       description: 'Especificação da API e das rotas feitas.',
@@ -63,13 +59,11 @@ app.register(fastifySwagger, {
 
 app.register(fastifySwaggerUi, {
   routePrefix: '/docs',
+
   uiConfig: {
     persistAuthorization: true,
   },
 })
-
-app.setSerializerCompiler(serializerCompiler)
-app.setValidatorCompiler(validatorCompiler)
 
 app.register(createUserRoute)
 app.register(authenticateRoute)

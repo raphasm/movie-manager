@@ -30,7 +30,7 @@ export async function getMyMovies({ userId, page }: GetMyMoviesParams) {
     // }
     const average =
       ratingGroup && ratingGroup._avg.rating
-        ? Math.floor(ratingGroup._avg.rating * 10) / 10
+        ? Math.floor(Number(ratingGroup._avg.rating) * 10) / 10
         : 0
 
     return {

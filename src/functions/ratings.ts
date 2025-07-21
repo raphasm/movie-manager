@@ -18,12 +18,9 @@ export async function ratings() {
   const moviesWithAverage = movies.map((movie) => {
     const ratingGroup = ratings.find((rating) => rating.movie_id === movie.id)
 
-    // if (ratingGroup && ratingGroup._avg.rating) {
-    //   Math.floor(ratingGroup._avg.rating * 10) / 10
-    // }
     const average =
       ratingGroup && ratingGroup._avg.rating
-        ? Math.floor(ratingGroup._avg.rating * 10) / 10
+        ? Math.floor(Number(ratingGroup._avg.rating) * 10) / 10
         : 0
 
     return {
@@ -32,7 +29,7 @@ export async function ratings() {
     }
   })
 
-  console.log(moviesWithAverage)
+  // console.log(moviesWithAverage)
 
   // Busca todos os filmes com suas avaliações
   // const movies = await prisma.movie.findMany({

@@ -15,17 +15,24 @@ export const getMovieRoute: FastifyPluginAsyncZod = async (app) => {
           movieId: z.string(),
         }),
         response: {
-          200: z.object({
-            movie: z.object({
-              id: z.string().uuid(),
+          200: z.array(
+            z.object({
+              id: z.string(),
               title: z.string(),
               year: z.string(),
               category: z.string(),
               description: z.string(),
               filename: z.string(),
-              ratingCount: z.number().int(),
+              averageRating: z.number(),
+              evaluations: z.array(
+                z.object({
+                  name: z.string(),
+                  rating: z.coerce.number().nullable(),
+                  comment: z.string().nullable(),
+                }),
+              ),
             }),
-          }),
+          ),
         },
       },
     },
@@ -34,17 +41,56 @@ export const getMovieRoute: FastifyPluginAsyncZod = async (app) => {
 
       const { movie } = await getMovie({ movieId })
 
-      return reply.status(200).send({
-        movie: {
-          id: movie.id,
-          title: movie.title,
-          year: movie.year,
-          category: movie.category,
-          description: movie.description,
-          filename: movie.filename,
-          ratingCount: movie._count.evaluations,
-        },
-      })
+      const movieMapped = movie.map((movies) => ({
+        id: movies.id,
+        title: movies.title,
+        year: movies.year,
+        category: movies.category,
+        description: movies.description,
+        filename: movies.filename,
+        averageRating: movies.averageRating,
+        evaluations: movies.evaluations.map((evaluation) => ({
+          rating: Number(evaluation.rating),
+          comment: evaluation.comment,
+          name: evaluation.user.name,
+        })),
+      }))
+
+      return reply.status(200).send(movieMapped)
     },
   )
 }
+
+// {
+//   id: movie,
+//   title: movie.title,
+//   year: movie.year,
+//   category: movie.category,
+//   description: movie.description,
+//   filename: movie.filename,
+//   averageRating: movie.averageRating,
+//   evaluations: movie.evaluations.map((evaluation) => ({
+//     rating: evaluation.rating,
+//     comment: evaluation.comment,
+//     name: evaluation.user.name,
+//   })),
+// },
+
+// 200: z.array(
+//             z.object({
+//               id: z.string(),
+//               title: z.string(),
+//               year: z.string(),
+//               category: z.string(),
+//               description: z.string(),
+//               filename: z.string(),
+//               averageRating: z.number().nullable(),
+//               evaluations: z.array(
+//                 z.object({
+//                   name: z.string(),
+//                   rating: z.number().nullable(),
+//                   comment: z.string().nullable(),
+//                 }),
+//               ),
+//             }),
+//           ),
