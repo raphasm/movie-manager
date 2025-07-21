@@ -20,6 +20,7 @@ export const getMovieByTitleRoute: FastifyPluginAsyncZod = async (app) => {
             movies: z.array(
               z.object({
                 id: z.string().uuid(),
+                averageRating: z.coerce.number().nullable(),
                 title: z.string(),
                 year: z.string(),
                 category: z.string(),
@@ -36,7 +37,12 @@ export const getMovieByTitleRoute: FastifyPluginAsyncZod = async (app) => {
 
       const { movies } = await getMovieByTitle({ query, page })
 
-      return reply.status(200).send({ movies })
+      const moviesMapped = movies.map((movie) => ({
+        ...movie,
+        averageRating: Number(movie.averageRating),
+      }))
+
+      return reply.status(200).send({ movies: moviesMapped })
     },
   )
 }

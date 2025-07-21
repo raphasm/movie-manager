@@ -11,7 +11,7 @@ export const ratingsRoute: FastifyPluginAsyncZod = async (app) => {
         response: {
           201: z.array(
             z.object({
-              averageRating: z.number(),
+              averageRating: z.coerce.number(),
               id: z.string(),
               title: z.string(),
               year: z.string(),
@@ -29,7 +29,12 @@ export const ratingsRoute: FastifyPluginAsyncZod = async (app) => {
 
       const { movies } = await ratings()
 
-      return reply.status(201).send(movies)
+      const mappedMovies = movies.map((movie) => ({
+        ...movie,
+        averageRating: Number(movie.averageRating),
+      }))
+
+      return reply.status(201).send(mappedMovies)
     },
   )
 }

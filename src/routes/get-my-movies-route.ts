@@ -37,7 +37,17 @@ export const getMyMoviesRoute: FastifyPluginAsyncZod = async (app) => {
 
       const { movies } = await getMyMovies({ userId, page })
 
-      return reply.status(200).send({ movies })
+      const formattedMovies = movies.map((movie) => ({
+        id: movie.id,
+        title: movie.title,
+        year: movie.year,
+        category: movie.category,
+        description: movie.description,
+        filename: movie.filename,
+        averageRating: Number(movie.averageRating),
+      }))
+
+      return reply.status(200).send({ movies: formattedMovies })
     },
   )
 }

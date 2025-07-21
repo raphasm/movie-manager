@@ -23,16 +23,6 @@ export async function createEvaluations({
     throw new Error('Movie not found.')
   }
 
-  // const { _avg } = await prisma.evaluation.aggregate({
-  //   where: { movie_id: movieId },
-  //   _avg: { rating: true },
-  // })
-
-  // const avg = _avg.rating
-
-  // const average = Math.floor(avg * 10) / 10
-  // averageRating: _avg.rating,
-
   const evaluation = await prisma.evaluation.create({
     data: {
       rating,
@@ -42,15 +32,26 @@ export async function createEvaluations({
     },
   })
 
-  // Calcula a média das avaliações do filme após adicionar a nova avaliação
-  // const { _avg } = await prisma.evaluation.aggregate({
-  //   where: { movie_id: movieId },
-  //   _avg: { rating: true },
-  // })
+  const ratings = await prisma.evaluation.groupBy({
+    by: ['movie_id'],
+    _avg: { rating: true },
+    where: {
+      rating: { not: null },
+    },
+  })
 
-  // const media = _avg.rating
-  // const arredondado = Math.floor(media * 10) / 10
-  // averageRating: _avg.rating,
+  const ratingGroup = ratings.find((rating) => rating.movie_id === movieId)
+
+  const average =
+    ratingGroup && ratingGroup._avg.rating
+      ? Math.floor(Number(ratingGroup._avg.rating) * 10) / 10
+      : 0
+
+  await prisma.movie.update({
+    where: { id: movieId },
+    data: { averageRating: average },
+  })
+
   return {
     evaluation,
   }

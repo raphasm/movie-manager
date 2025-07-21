@@ -48,7 +48,7 @@ export const getMovieRoute: FastifyPluginAsyncZod = async (app) => {
         category: movies.category,
         description: movies.description,
         filename: movies.filename,
-        averageRating: movies.averageRating,
+        averageRating: Number(movies.averageRating),
         evaluations: movies.evaluations.map((evaluation) => ({
           rating: Number(evaluation.rating),
           comment: evaluation.comment,
