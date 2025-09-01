@@ -25,7 +25,7 @@ export async function seed() {
   const randomUsers = users[Math.floor(Math.random() * users.length)]
 
   const movies = []
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 15; i++) {
     const movie = await prisma.movie.create({
       data: {
         title: `As cronicas de ${faker.person.firstName()}`,
@@ -40,7 +40,7 @@ export async function seed() {
   }
 
   const evaluations = []
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 13; i++) {
     const randomMovies = movies[Math.floor(Math.random() * movies.length)]
 
     const evaluation = await prisma.evaluation.create({
