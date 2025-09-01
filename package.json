@@ -4,7 +4,8 @@
   "description": "Movie Manager app.",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch --env-file .env src/server.ts"
+    "dev": "tsx watch --env-file .env src/server.ts",
+    "seed": "tsx ./prisma/seed.ts"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +28,7 @@
     "zod-openapi": "^4.2.4"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.9.0",
     "@types/bcrypt": "^5.0.2",
     "@types/multer": "^1.4.13",
     "@types/node": "^22.15.30",

@@ -1,9 +1,10 @@
+import { Categories } from '@prisma/client'
 import { prisma } from '../lib/prisma'
 
 interface CreateMovieParams {
   title: string
   year: string
-  category: string
+  category: Categories
   description: string
   filename: string
   user_id: string

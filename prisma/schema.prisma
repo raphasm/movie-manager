@@ -7,6 +7,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Categories {
+  ACAO
+  AVENTURA
+  COMEDIA
+  DRAMA
+  DOCUMENTARIO
+  TERROR
+  SUSPENSE
+  FICCAO
+  ANIME
+  ROMANCE
+}
+
 model User {
   id       String @id @default(uuid())
   name     String
@@ -20,13 +33,13 @@ model User {
 }
 
 model Movie {
-  id            String   @id @default(uuid())
+  id            String     @id @default(uuid())
   title         String
   year          String
-  category      String
+  category      Categories
   description   String
   filename      String
-  averageRating Decimal? @default(0) @db.Decimal(2, 1)
+  averageRating Decimal?   @default(0) @db.Decimal(2, 1)
 
   user        User         @relation(fields: [user_id], references: [id])
   user_id     String

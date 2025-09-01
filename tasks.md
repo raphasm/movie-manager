@@ -1,6 +1,8 @@
 - [] Adicionar As avaliações "Evaluations" e comentários quando vc busca um filme pelo id
 - [] Calcular a média total e fazer o valor atualizar no banco
 - [] Fazer uma função para atualizar e calcular a média sempre que o valor altera
+- [] Adicionar tags com os generos de filme que tem na category
+- [] Poder buscar os filmes por categoria
 
 - [] arrumar o upload do arquivo no swagger
 - [] criar seed no banco de dados
@@ -16,6 +18,10 @@
   // rating: { not: null },
   // },
   // })
+
+  <!--  -->
+
+  <!--  -->
 
 // const movies = await tx.movie.findMany()
 
