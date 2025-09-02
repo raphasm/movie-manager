@@ -21,6 +21,7 @@ import { uploadsFileRoute } from './routes/upload-file-route'
 import uploadConfig from './configs/upload'
 import fastifySwagger from '@fastify/swagger'
 import fastifySwaggerUi from '@fastify/swagger-ui'
+import { getMoviesByCategoriesRoute } from './routes/get-movies-by-categories-route'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 app.register(fastifyMultipart, {
@@ -75,6 +76,7 @@ app.register(createEvaluationsRoute)
 app.register(getEvaluationsRoute)
 app.register(ratingsRoute)
 app.register(uploadsFileRoute)
+app.register(getMoviesByCategoriesRoute)
 
 app.listen({ port: env.PORT }).then(() => {
   console.log('HTTP server running!')
