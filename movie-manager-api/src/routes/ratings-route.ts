@@ -1,6 +1,5 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
-import { createUser } from '../functions/create-user'
 import { ratings } from '../functions/ratings'
 
 export const ratingsRoute: FastifyPluginAsyncZod = async (app) => {

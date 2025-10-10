@@ -1,7 +1,7 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
-import { verifyJwt } from '../middlewares/verify-jwt'
 import { getMyMovies } from '../functions/get-my-movies'
+import { verifyJwt } from '../middlewares/verify-jwt'
 
 export const getMyMoviesRoute: FastifyPluginAsyncZod = async (app) => {
   app.get(
