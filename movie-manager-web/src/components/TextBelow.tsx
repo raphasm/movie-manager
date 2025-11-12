@@ -1,10 +1,34 @@
 import React from 'react'
+import { tv, type VariantProps } from 'tailwind-variants'
 
-interface TextBelowProps {
+const textBelowVariants = tv({
+  base: 'leading-[1.6] font-body m-0',
+  variants: {
+    size: {
+      xs: 'text-xs',
+      sm: 'text-sm',
+      md: 'text-base',
+    },
+    variant: {
+      muted: 'text-custom-text-gray',
+      secondary: 'text-custom-text-brand',
+      light: 'text-custom-text-tagline',
+    },
+    align: {
+      left: 'text-left',
+      center: 'text-center',
+      right: 'text-right',
+    },
+  },
+  defaultVariants: {
+    size: 'sm',
+    variant: 'muted',
+    align: 'left',
+  },
+})
+
+interface TextBelowProps extends VariantProps<typeof textBelowVariants> {
   children: React.ReactNode
-  size?: 'xs' | 'sm' | 'md'
-  variant?: 'muted' | 'secondary' | 'light'
-  align?: 'left' | 'center' | 'right'
 }
 
 export function TextBelow({
@@ -13,33 +37,7 @@ export function TextBelow({
   variant = 'muted',
   align = 'left',
 }: TextBelowProps) {
-  const sizes = {
-    xs: 'text-xs',
-    sm: 'text-sm',
-    md: 'text-base',
-  }
-
-  const variants = {
-    muted: '#7a7b9f',
-    secondary: '#b5b6c9',
-    light: '#e4e5ec',
-  }
-
-  const aligns = {
-    left: 'text-left',
-    center: 'text-center',
-    right: 'text-right',
-  }
-
   return (
-    <p
-      className={`${sizes[size]} ${aligns[align]} leading-[1.6] m-0`}
-      style={{
-        fontFamily: 'var(--font-body)',
-        color: variants[variant],
-      }}
-    >
-      {children}
-    </p>
+    <p className={textBelowVariants({ size, variant, align })}>{children}</p>
   )
 }

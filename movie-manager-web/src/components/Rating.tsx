@@ -1,11 +1,44 @@
 import { Star } from '@phosphor-icons/react'
+import { tv, type VariantProps } from 'tailwind-variants'
 
-interface RatingProps {
+const ratingVariants = tv({
+  slots: {
+    container: 'flex items-center gap-2',
+    starsContainer: 'flex items-center gap-1',
+    starButton: 'transition-all',
+    value: 'leading-[1.5] font-body text-custom-text-brand',
+  },
+  variants: {
+    size: {
+      sm: {
+        value: 'text-sm',
+      },
+      md: {
+        value: 'text-base',
+      },
+      lg: {
+        value: 'text-lg',
+      },
+    },
+    interactive: {
+      true: {
+        starButton: 'cursor-pointer hover:scale-110',
+      },
+      false: {
+        starButton: 'cursor-default',
+      },
+    },
+  },
+  defaultVariants: {
+    size: 'md',
+    interactive: false,
+  },
+})
+
+interface RatingProps extends VariantProps<typeof ratingVariants> {
   rating: number
   maxRating?: number
-  size?: 'sm' | 'md' | 'lg'
   showValue?: boolean
-  interactive?: boolean
   onChange?: (rating: number) => void
 }
 
@@ -17,13 +50,15 @@ export function Rating({
   interactive = false,
   onChange,
 }: RatingProps) {
-  const sizes = {
-    sm: { star: 14, text: 'text-sm' },
-    md: { star: 16, text: 'text-base' },
-    lg: { star: 20, text: 'text-lg' },
+  const styles = ratingVariants({ size, interactive })
+
+  const starSizes = {
+    sm: 14,
+    md: 16,
+    lg: 20,
   }
 
-  const currentSize = sizes[size]
+  const starSize = starSizes[size || 'md']
 
   const renderStars = () => {
     const stars = []
@@ -34,18 +69,18 @@ export function Rating({
       stars.push(
         <button
           key={i}
-          className={`${
-            interactive ? 'cursor-pointer hover:scale-110' : 'cursor-default'
-          } transition-all`}
+          className={styles.starButton()}
           onClick={() => interactive && onChange?.(i)}
           disabled={!interactive}
         >
           <Star
-            size={currentSize.star}
+            size={starSize}
             weight={isFilled || isPartial ? 'fill' : 'regular'}
-            style={{
-              color: isFilled || isPartial ? '#a85fdd' : '#3e3e56',
-            }}
+            className={
+              isFilled || isPartial
+                ? 'text-custom-purple-tab'
+                : 'text-gray-medium'
+            }
           />
         </button>,
       )
@@ -54,19 +89,9 @@ export function Rating({
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <div className="flex items-center gap-1">{renderStars()}</div>
-      {showValue && (
-        <span
-          className={`${currentSize.text} leading-[1.5]`}
-          style={{
-            fontFamily: 'var(--font-body)',
-            color: '#b5b6c9',
-          }}
-        >
-          {rating.toFixed(1)}
-        </span>
-      )}
+    <div className={styles.container()}>
+      <div className={styles.starsContainer()}>{renderStars()}</div>
+      {showValue && <span className={styles.value()}>{rating.toFixed(1)}</span>}
     </div>
   )
 }

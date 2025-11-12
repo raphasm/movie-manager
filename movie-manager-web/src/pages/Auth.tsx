@@ -1,17 +1,15 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Envelope, Lock, User, Eye, EyeSlash } from '@phosphor-icons/react'
-import {
-  MenuTab,
-  Input,
-  Button,
-  Link,
-  TextBelow,
-  IconButton,
-} from '../components'
 
 import logoImage from '../assets/logo.svg'
 import loginBgImage from '../assets/login-image.png'
+import { MenuTab } from '../components/MenuTab'
+import { TextBelow } from '../components/TextBelow'
+import { Input } from '../components/Input'
+import { IconButton } from '../components/IconButton'
+import { Link } from '../components/Link'
+import { Button } from '../components/Button'
 
 interface AuthProps {
   onLogin?: () => void
@@ -238,7 +236,7 @@ export function Auth({ onLogin }: AuthProps) {
                   />
                 </div>
 
-                <div className="flex justify-end">
+                <div className="flex justify-center">
                   <Link
                     variant="primary"
                     size="sm"

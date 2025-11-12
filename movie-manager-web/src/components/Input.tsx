@@ -1,15 +1,56 @@
 import React from 'react'
+import { tv, type VariantProps } from 'tailwind-variants'
 
-interface InputProps {
+const inputVariants = tv({
+  slots: {
+    wrapper: 'flex flex-col gap-1.5 w-full',
+    container:
+      'flex items-center gap-2 bg-transparent border rounded-md transition-colors focus-within:border-custom-purple',
+    icon: 'w-5 h-5 flex-shrink-0 text-white',
+    input:
+      'flex-1 bg-transparent border-none outline-none leading-[1.5] text-white font-body placeholder:text-custom-text-placeholder disabled:cursor-not-allowed',
+    rightElement: 'flex-shrink-0',
+    error: 'text-sm leading-[1.6] font-body text-custom-error',
+  },
+  variants: {
+    size: {
+      sm: {
+        container: 'px-3 py-2 text-sm',
+      },
+      md: {
+        container: 'px-4 py-3 text-base',
+      },
+      lg: {
+        container: 'px-5 py-4 text-lg',
+      },
+    },
+    error: {
+      true: {
+        container: 'border-custom-error',
+      },
+      false: {
+        container: 'border-custom-bg-tab',
+      },
+    },
+    disabled: {
+      true: {
+        container: 'opacity-50 cursor-not-allowed',
+      },
+    },
+  },
+  defaultVariants: {
+    size: 'md',
+    error: false,
+    disabled: false,
+  },
+})
+
+interface InputProps
+  extends VariantProps<typeof inputVariants>,
+    Omit<React.ComponentProps<'input'>, 'error' | 'disabled' | 'size'> {
   icon?: React.ReactNode
-  placeholder: string
-  type?: string
-  value?: string
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   error?: boolean
   errorMessage?: string
-  disabled?: boolean
-  size?: 'sm' | 'md' | 'lg'
   rightElement?: React.ReactNode
 }
 
@@ -18,60 +59,34 @@ export function Input({
   placeholder,
   type = 'text',
   value,
-  onChange,
-  error = false,
+  error,
   errorMessage,
-  disabled = false,
-  size = 'md',
+  disabled,
+  size,
   rightElement,
+  className,
+  ...props
 }: InputProps) {
-  const sizes = {
-    sm: 'px-3 py-2 text-sm',
-    md: 'px-4 py-3 text-base',
-    lg: 'px-5 py-4 text-lg',
-  }
+  const styles = inputVariants({ size, error, disabled })
 
   return (
-    <div className="flex flex-col gap-1.5 w-full">
-      <div
-        className={`flex items-center gap-2 ${
-          sizes[size]
-        } bg-transparent border rounded-md transition-colors focus-within:border-[#892ccd] ${
-          disabled ? 'opacity-50 cursor-not-allowed' : ''
-        }`}
-        style={{
-          borderColor: error ? '#dd3444' : '#1a1b2d',
-        }}
-      >
-        {icon && <div className="w-5 h-5 flex-shrink-0 text-white">{icon}</div>}
+    <div className={styles.wrapper()}>
+      <div className={styles.container()}>
+        {icon && <div className={styles.icon()}>{icon}</div>}
         <input
           type={type}
           placeholder={placeholder}
           value={value}
-          onChange={onChange}
           disabled={disabled}
-          className="flex-1 bg-transparent border-none outline-none leading-[1.5] text-white disabled:cursor-not-allowed"
-          style={{
-            fontFamily: 'var(--font-body)',
-          }}
+          className={styles.input({ className })}
+          {...props}
         />
-        {rightElement && <div className="flex-shrink-0">{rightElement}</div>}
-        <style>{`
-          input::placeholder {
-            color: #7a7b9f;
-          }
-        `}</style>
+        {rightElement && (
+          <div className={styles.rightElement()}>{rightElement}</div>
+        )}
       </div>
       {error && errorMessage && (
-        <span
-          className="text-sm leading-[1.6]"
-          style={{
-            fontFamily: 'var(--font-body)',
-            color: '#dd3444',
-          }}
-        >
-          {errorMessage}
-        </span>
+        <span className={styles.error()}>{errorMessage}</span>
       )}
     </div>
   )

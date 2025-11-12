@@ -9,20 +9,17 @@ import {
   EyeSlash,
   Plus,
 } from '@phosphor-icons/react'
-import {
-  Button,
-  IconButton,
-  Input,
-  TextArea,
-  Rating,
-  Link,
-  TextBelow,
-  MenuTab,
-  MovieCard,
-} from '../components'
 
 // Import a movie cover for the card example
 import pobresCriaturas from '../assets/movies/pobres-criaturas.png'
+import { TextBelow } from '../components/TextBelow'
+import { Button } from '../components/Button'
+import { IconButton } from '../components/IconButton'
+import { Input } from '../components/Input'
+import { TextArea } from '../components/TextArea'
+import { MenuTab } from '../components/MenuTab'
+import { Rating } from '../components/Rating'
+import { MovieCard } from '../components/MovieCard'
 
 export function ComponentShowcase() {
   const [inputValue, setInputValue] = useState('')
@@ -187,10 +184,7 @@ export function ComponentShowcase() {
 
         {/* Inputs Section */}
         <section className="space-y-6">
-          <h2
-            className="text-2xl font-semibold"
-            style={{ fontFamily: 'var(--font-title)', color: '#e5e2e9' }}
-          >
+          <h2 className="text-2xl font-semibold text-custom-text-light font-title">
             Inputs
           </h2>
 
@@ -320,45 +314,6 @@ export function ComponentShowcase() {
           </div>
         </section>
 
-        {/* Links Section */}
-        <section className="space-y-6">
-          <h2
-            className="text-2xl font-semibold"
-            style={{ fontFamily: 'var(--font-title)', color: '#e5e2e9' }}
-          >
-            Links
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="space-y-2">
-              <Link variant="primary">Link primário</Link>
-              <Link variant="secondary">Link secundário</Link>
-              <Link variant="muted">Link discreto</Link>
-            </div>
-
-            <div className="space-y-2">
-              <Link variant="primary" underline>
-                Link com sublinhado
-              </Link>
-              <Link variant="primary" size="sm">
-                Link pequeno
-              </Link>
-              <Link variant="primary" size="lg">
-                Link grande
-              </Link>
-            </div>
-
-            <div className="space-y-2">
-              <Link href="https://example.com" variant="primary">
-                Link externo
-              </Link>
-              <Link onClick={() => alert('Clicou!')} variant="secondary">
-                Link com ação
-              </Link>
-            </div>
-          </div>
-        </section>
-
         {/* Text Below Section */}
         <section className="space-y-6">
           <h2
@@ -378,21 +333,12 @@ export function ComponentShowcase() {
             <TextBelow variant="light" size="md">
               Texto mais claro e destacado
             </TextBelow>
-            <TextBelow variant="muted" size="sm" align="center">
-              Texto centralizado
-            </TextBelow>
-            <TextBelow variant="secondary" size="sm" align="right">
-              Texto alinhado à direita
-            </TextBelow>
           </div>
         </section>
 
         {/* Movie Card Section */}
         <section className="space-y-6">
-          <h2
-            className="text-2xl font-semibold"
-            style={{ fontFamily: 'var(--font-title)', color: '#e5e2e9' }}
-          >
+          <h2 className="text-2xl font-semibold font-title text-custom-text-light">
             Movie Card
           </h2>
 

@@ -1,12 +1,38 @@
 import React from 'react'
+import { tv, type VariantProps } from 'tailwind-variants'
 
-interface LinkProps {
+const linkVariants = tv({
+  base: 'leading-[1.5] font-body transition-colors hover:opacity-80',
+  variants: {
+    size: {
+      sm: 'text-sm',
+      md: 'text-base',
+      lg: 'text-lg',
+    },
+    variant: {
+      primary: 'text-custom-purple-tab',
+      secondary: 'text-custom-text-brand',
+      muted: 'text-custom-text-gray',
+    },
+    underline: {
+      true: 'underline',
+    },
+    isButton: {
+      true: 'text-left',
+    },
+  },
+  defaultVariants: {
+    size: 'md',
+    variant: 'primary',
+    underline: false,
+  },
+})
+
+interface LinkProps
+  extends Omit<VariantProps<typeof linkVariants>, 'isButton'> {
   children: React.ReactNode
   href?: string
   onClick?: () => void
-  size?: 'sm' | 'md' | 'lg'
-  variant?: 'primary' | 'secondary' | 'muted'
-  underline?: boolean
 }
 
 export function Link({
@@ -17,18 +43,6 @@ export function Link({
   variant = 'primary',
   underline = false,
 }: LinkProps) {
-  const sizes = {
-    sm: 'text-sm',
-    md: 'text-base',
-    lg: 'text-lg',
-  }
-
-  const variants = {
-    primary: '#a85fdd',
-    secondary: '#b5b6c9',
-    muted: '#7a7b9f',
-  }
-
   const handleClick = (e: React.MouseEvent) => {
     if (onClick) {
       e.preventDefault()
@@ -37,20 +51,13 @@ export function Link({
   }
 
   const Component = href ? 'a' : 'button'
+  const isButton = !href
 
   return (
     <Component
       href={href}
       onClick={handleClick}
-      className={`${
-        sizes[size]
-      } leading-[1.5] transition-colors hover:opacity-80 ${
-        underline ? 'underline' : ''
-      } ${!href ? 'text-left' : ''}`}
-      style={{
-        fontFamily: 'var(--font-body)',
-        color: variants[variant],
-      }}
+      className={linkVariants({ size, variant, underline, isButton })}
     >
       {children}
     </Component>

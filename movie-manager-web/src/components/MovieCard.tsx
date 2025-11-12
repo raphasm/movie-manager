@@ -1,15 +1,67 @@
 import { Star } from '@phosphor-icons/react'
+import { tv, type VariantProps } from 'tailwind-variants'
 
-export interface MovieCardProps {
+const movieCardVariants = tv({
+  slots: {
+    container:
+      'group relative rounded-xl border border-custom-bg-menu overflow-hidden cursor-pointer transition-all duration-300 ease-out hover:border-2 hover:border-custom-bg-tab',
+    image:
+      'absolute inset-0 w-full h-full object-center transition-transform duration-300 ease-out group-hover:scale-110',
+    gradientBase: 'absolute inset-0 transition-all duration-300 ease-out',
+    gradientHover:
+      'absolute inset-0 opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100',
+    ratingTag:
+      'absolute top-2 right-2 flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full bg-gray-darkest/80',
+    ratingNumber:
+      'text-lg sm:text-xl leading-[1.276] font-title font-bold text-custom-text-tagline',
+    ratingSeparator:
+      'text-xs leading-[1.276] font-title font-medium text-custom-text-tagline',
+    ratingMax:
+      'text-xs leading-[1.276] font-title font-medium text-custom-text-tagline',
+    ratingIcon: 'text-white sm:w-4 sm:h-4',
+    content:
+      'absolute bottom-0 left-0 right-0 p-3 sm:p-4 lg:p-5 transition-all duration-300 ease-out group-hover:bottom-4',
+    contentWrapper: 'flex flex-col gap-3 sm:gap-4 lg:gap-1',
+    textWrapper: 'flex flex-col gap-1',
+    title:
+      'text-base sm:text-lg lg:text-xl leading-[1.276] font-title font-bold text-custom-text-tagline m-0 line-clamp-2',
+    metaContainer: 'flex items-center gap-1 sm:gap-1.5',
+    category:
+      'text-xs sm:text-sm leading-[1.6] font-body text-custom-text-brand truncate',
+    separator: 'w-1 h-1 rounded-full flex-shrink-0 bg-custom-text-brand',
+    year: 'text-xs sm:text-sm leading-[1.6] font-body text-custom-text-brand',
+    description:
+      'opacity-0 max-h-0 overflow-hidden transition-all duration-300 ease-out group-hover:opacity-100 group-hover:max-h-20 text-xs sm:text-sm leading-[1.5] font-body text-custom-text-brand',
+  },
+  variants: {
+    size: {
+      sm: {
+        container:
+          'w-full max-w-[160px] sm:max-w-[180px] md:max-w-[200px] h-[220px] sm:h-[250px] md:h-[280px]',
+      },
+      md: {
+        container:
+          'w-full max-w-[180px] sm:max-w-[220px] md:max-w-[260px] lg:max-w-[280px] h-[250px] sm:h-[300px] md:h-[340px] lg:h-[360px]',
+      },
+      lg: {
+        container:
+          'w-full max-w-[200px] sm:max-w-[260px] md:max-w-[300px] lg:max-w-[320px] h-[280px] sm:h-[360px] md:h-[400px] lg:h-[420px]',
+      },
+    },
+  },
+  defaultVariants: {
+    size: 'md',
+  },
+})
+
+export interface MovieCardProps extends VariantProps<typeof movieCardVariants> {
   title: string
   category: string
   year: string
   rating: string | number
   cover: string
   description?: string
-  onClick?: () => void
   showRating?: boolean
-  size?: 'sm' | 'md' | 'lg'
 }
 
 export function MovieCard({
@@ -19,149 +71,60 @@ export function MovieCard({
   rating,
   cover,
   description,
-  onClick,
   showRating = true,
   size = 'md',
 }: MovieCardProps) {
-  const sizes = {
-    sm: {
-      width: 'w-full max-w-[160px] sm:max-w-[180px] md:max-w-[200px]',
-      height: 'h-[220px] sm:h-[250px] md:h-[280px]',
-    },
-    md: {
-      width:
-        'w-full max-w-[180px] sm:max-w-[220px] md:max-w-[260px] lg:max-w-[280px]',
-      height: 'h-[250px] sm:h-[300px] md:h-[340px] lg:h-[360px]',
-    },
-    lg: {
-      width:
-        'w-full max-w-[200px] sm:max-w-[260px] md:max-w-[300px] lg:max-w-[320px]',
-      height: 'h-[280px] sm:h-[360px] md:h-[400px] lg:h-[420px]',
-    },
-  }
-
-  const currentSize = sizes[size]
+  const styles = movieCardVariants({ size })
 
   return (
-    <div
-      className={`group relative ${currentSize.width} ${currentSize.height} rounded-xl border overflow-hidden cursor-pointer transition-all duration-300 ease-out hover:border-2 hover:border-[#1A1B2D]`}
-      style={{
-        borderColor: '#131320',
-      }}
-      onClick={onClick}
-    >
+    <div className={styles.container()}>
       {/* Cover Image */}
-      <img
-        src={cover}
-        alt={title}
-        className="absolute inset-0 w-full h-full object-center transition-transform duration-300 ease-out group-hover:scale-110"
-      />
+      <img src={cover} alt={title} className={styles.image()} />
 
       {/* Gradient Shade */}
       <div
-        className="absolute inset-0 transition-all duration-300 ease-out"
+        className={styles.gradientBase()}
         style={{
           background:
             'linear-gradient(180deg, rgba(9, 9, 16, 0) 0%, rgba(9, 9, 16, 0.9) 73%)',
         }}
-      ></div>
+      />
 
       {/* Hover Gradient Shade */}
       <div
-        className="absolute inset-0 opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100"
+        className={styles.gradientHover()}
         style={{
           background:
             'linear-gradient(180deg, rgba(9, 9, 16, 0.6) 0%, rgba(9, 9, 16, 0.9) 50%, rgba(9, 9, 16, 1) 100%)',
         }}
-      ></div>
+      />
 
       {/* Rating Tag */}
       {showRating && (
-        <div
-          className="absolute top-2 right-2 flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full"
-          style={{ backgroundColor: 'rgba(15, 15, 26, 0.8)' }}
-        >
+        <div className={styles.ratingTag()}>
           <div className="flex items-baseline gap-0.5">
-            <span
-              className="text-lg sm:text-xl leading-[1.276]"
-              style={{
-                fontFamily: 'var(--font-title)',
-                fontWeight: 700,
-                color: '#e4e5ec',
-              }}
-            >
-              {rating}
-            </span>
-            <span
-              className="text-xs leading-[1.276]"
-              style={{
-                fontFamily: 'var(--font-title)',
-                fontWeight: 500,
-                color: '#e4e5ec',
-              }}
-            >
-              /
-            </span>
-            <span
-              className="text-xs leading-[1.276]"
-              style={{
-                fontFamily: 'var(--font-title)',
-                fontWeight: 500,
-                color: '#e4e5ec',
-              }}
-            >
-              5
-            </span>
+            <span className={styles.ratingNumber()}>{rating}</span>
+            <span className={styles.ratingSeparator()}>/</span>
+            <span className={styles.ratingMax()}>5</span>
           </div>
-          <Star size={14} weight="fill" className="text-white sm:w-4 sm:h-4" />
+          <Star size={14} weight="fill" className={styles.ratingIcon()} />
         </div>
       )}
 
       {/* Text Content */}
-      <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 lg:p-5 transition-all duration-300 ease-out group-hover:bottom-4">
-        <div className="flex flex-col gap-3 sm:gap-4 lg:gap-1">
-          <div className="flex flex-col gap-1">
-            <h3
-              className="text-base sm:text-lg lg:text-xl leading-[1.276] m-0 line-clamp-2"
-              style={{
-                fontFamily: 'var(--font-title)',
-                fontWeight: 700,
-                color: '#e4e5ec',
-              }}
-            >
-              {title}
-            </h3>
-            <div className="flex items-center gap-1 sm:gap-1.5">
-              <span
-                className="text-xs sm:text-sm leading-[1.6] truncate"
-                style={{ fontFamily: 'var(--font-body)', color: '#b5b6c9' }}
-              >
-                {category}
-              </span>
-              <div
-                className="w-1 h-1 rounded-full flex-shrink-0"
-                style={{ backgroundColor: '#b5b6c9' }}
-              ></div>
-              <span
-                className="text-xs sm:text-sm leading-[1.6]"
-                style={{ fontFamily: 'var(--font-body)', color: '#b5b6c9' }}
-              >
-                {year}
-              </span>
+      <div className={styles.content()}>
+        <div className={styles.contentWrapper()}>
+          <div className={styles.textWrapper()}>
+            <h3 className={styles.title()}>{title}</h3>
+            <div className={styles.metaContainer()}>
+              <span className={styles.category()}>{category}</span>
+              <div className={styles.separator()} />
+              <span className={styles.year()}>{year}</span>
             </div>
           </div>
 
           {/* Description - only shows on hover */}
-          {description && (
-            <div className="opacity-0 max-h-0 overflow-hidden transition-all duration-300 ease-out group-hover:opacity-100 group-hover:max-h-20">
-              <p
-                className="text-xs sm:text-sm leading-[1.5] "
-                style={{ fontFamily: 'var(--font-body)', color: '#b5b6c9' }}
-              >
-                {description}
-              </p>
-            </div>
-          )}
+          {description && <p className={styles.description()}>{description}</p>}
         </div>
       </div>
     </div>

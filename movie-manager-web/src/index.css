@@ -28,9 +28,11 @@
   --color-custom-text-light: #e5e2e9;
   --color-custom-text-brand: #b5b6c9;
   --color-custom-text-tagline: #e4e5ec;
+  --color-custom-text-placeholder: #7a7b9f;
   --color-custom-bg-menu: #131320;
   --color-custom-bg-tab: #1a1b2d;
   --color-custom-border-input: #1a1b2d;
+  --color-custom-error: #dd3444;
 }
 
 @layer base {
