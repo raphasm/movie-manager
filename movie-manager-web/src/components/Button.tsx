@@ -32,13 +32,16 @@ const buttonVariants = tv({
 
 interface ButtonProps
   extends Omit<React.ComponentProps<'button'>, 'size'>,
-    VariantProps<typeof buttonVariants> {}
+    VariantProps<typeof buttonVariants> {
+  icon?: React.ReactNode
+}
 
 export function Button({
   variant,
   size,
   fullWidth,
   className,
+  icon,
   children,
   type,
   disabled,
@@ -58,6 +61,7 @@ export function Button({
       disabled={disabled}
       {...props}
     >
+      {icon}
       {children}
     </button>
   )

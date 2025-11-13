@@ -29,6 +29,7 @@ const textBelowVariants = tv({
 
 interface TextBelowProps extends VariantProps<typeof textBelowVariants> {
   children: React.ReactNode
+  className?: string
 }
 
 export function TextBelow({
@@ -36,8 +37,11 @@ export function TextBelow({
   size = 'sm',
   variant = 'muted',
   align = 'left',
+  className,
 }: TextBelowProps) {
   return (
-    <p className={textBelowVariants({ size, variant, align })}>{children}</p>
+    <p className={textBelowVariants({ size, variant, align, className })}>
+      {children}
+    </p>
   )
 }

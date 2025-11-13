@@ -33,6 +33,7 @@ interface LinkProps
   children: React.ReactNode
   href?: string
   onClick?: () => void
+  className?: string
 }
 
 export function Link({
@@ -41,6 +42,7 @@ export function Link({
   onClick,
   size = 'md',
   variant = 'primary',
+  className,
   underline = false,
 }: LinkProps) {
   const handleClick = (e: React.MouseEvent) => {
@@ -57,7 +59,13 @@ export function Link({
     <Component
       href={href}
       onClick={handleClick}
-      className={linkVariants({ size, variant, underline, isButton })}
+      className={linkVariants({
+        size,
+        variant,
+        underline,
+        isButton,
+        className,
+      })}
     >
       {children}
     </Component>
