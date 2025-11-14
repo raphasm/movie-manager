@@ -40,7 +40,6 @@ const inputVariants = tv({
   },
   defaultVariants: {
     size: 'md',
-    error: false,
     disabled: false,
   },
 })

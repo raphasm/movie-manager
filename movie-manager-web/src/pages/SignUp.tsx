@@ -11,10 +11,29 @@ import { Button } from '../components/Button'
 import { IconButton } from '../components/IconButton'
 import { MenuTab } from '../components/MenuTab'
 import { useState } from 'react'
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+
+const signUpFormSchema = z.object({
+  name: z.string().min(1, 'Nome é obrigatório'),
+  email: z.email('E-mail é obrigatório'),
+  password: z.string().min(6, 'A senha deve conter pelo menos 6 caracteres'),
+})
+
+type SignUpForm = z.infer<typeof signUpFormSchema>
 
 export function SignUp() {
   const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
+
+  const form = useForm<SignUpForm>({
+    resolver: zodResolver(signUpFormSchema),
+  })
+
+  function handleSubmit(payload: SignUpForm) {
+    console.log(payload)
+  }
 
   const handleTabChange = (index: number) => {
     if (index === 0) {
@@ -39,53 +58,67 @@ export function SignUp() {
               Crie sua conta
             </h1>
 
-            <div className="flex flex-col gap-4 w-full">
-              <Input
-                icon={<User size={20} weight="regular" />}
-                placeholder="Nome completo"
-                type="text"
-              />
-              <Input
-                icon={<Envelope size={20} weight="regular" />}
-                placeholder="E-mail"
-                type="email"
-              />
-              <Input
-                icon={<Lock size={20} weight="regular" />}
-                placeholder="Senha (min. 6 caracteres)"
-                type={showPassword ? 'text' : 'password'}
-                rightElement={
-                  <IconButton
-                    icon={
-                      showPassword ? (
-                        <EyeIcon size={16} />
-                      ) : (
-                        <EyeSlashIcon size={16} />
-                      )
-                    }
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowPassword(!showPassword)}
-                  />
-                }
-              />
-            </div>
-          </div>
+            <form
+              className="flex flex-col gap-8"
+              onSubmit={form.handleSubmit(handleSubmit)}
+            >
+              <div className="flex flex-col gap-4 w-full">
+                <Input
+                  icon={<User size={20} weight="regular" />}
+                  placeholder="Nome completo"
+                  type="text"
+                  id="name"
+                  {...form.register('name')}
+                  error={!!form.formState.errors.name?.message}
+                  errorMessage={form.formState.errors.name?.message}
+                />
+                <Input
+                  icon={<Envelope size={20} weight="regular" />}
+                  placeholder="E-mail"
+                  type="email"
+                  id="email"
+                  {...form.register('email')}
+                  error={!!form.formState.errors.email?.message}
+                  errorMessage={form.formState.errors.email?.message}
+                />
+                <Input
+                  icon={<Lock size={20} weight="regular" />}
+                  placeholder="Senha (min. 6 caracteres)"
+                  type={showPassword ? 'text' : 'password'}
+                  {...form.register('password')}
+                  error={!!form.formState.errors.password?.message}
+                  errorMessage={form.formState.errors.password?.message}
+                  rightElement={
+                    <IconButton
+                      icon={
+                        showPassword ? (
+                          <EyeIcon size={16} />
+                        ) : (
+                          <EyeSlashIcon size={16} />
+                        )
+                      }
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowPassword(!showPassword)}
+                    />
+                  }
+                />
+              </div>
 
-          <div className="flex flex-col gap-3">
-            <Link to="/home">
-              <Button>Criar conta</Button>
-            </Link>
+              <div className="flex flex-col gap-3">
+                <Button type="submit">Criar conta</Button>
 
-            <p className="text-xs text-center text-custom-text-gray">
-              Já tem uma conta?{' '}
-              <Link
-                to="/sign-in"
-                className="text-custom-purple hover:text-custom-purple-hover transition-colors"
-              >
-                Fazer login
-              </Link>
-            </p>
+                <p className="text-xs text-center text-custom-text-gray">
+                  Já tem uma conta?{' '}
+                  <Link
+                    to="/sign-in"
+                    className="text-custom-purple hover:text-custom-purple-hover transition-colors"
+                  >
+                    Fazer login
+                  </Link>
+                </p>
+              </div>
+            </form>
           </div>
         </div>
       </div>
