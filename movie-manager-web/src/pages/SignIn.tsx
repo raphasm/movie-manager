@@ -102,7 +102,9 @@ export function SignIn() {
               </div>
 
               <div className="flex flex-col gap-3 mt-4">
-                <Button type="submit">Entrar</Button>
+                <Button disabled={form.formState.disabled} type="submit">
+                  Entrar
+                </Button>
 
                 <p className="text-xs text-center text-custom-text-gray">
                   Não tem uma conta?{' '}

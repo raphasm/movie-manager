@@ -6,6 +6,7 @@ import { ComponentShowcase } from './pages/ComponentsShowcase'
 import { AppLayout } from './pages/layouts/AppLayout'
 import { MyMovies } from './pages/MyMovies'
 import { Home } from './pages/Home'
+import { MovieDetails } from './pages/MovieDetails'
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
     children: [
       { path: 'my-movies', element: <MyMovies /> },
       { path: 'home', element: <Home /> },
+      { path: 'movie-details/:id', element: <MovieDetails /> },
     ],
   },
 

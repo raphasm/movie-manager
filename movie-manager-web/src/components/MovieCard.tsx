@@ -1,12 +1,14 @@
 import { Star } from '@phosphor-icons/react'
 import { tv, type VariantProps } from 'tailwind-variants'
+import { Link } from 'react-router-dom'
 
 const movieCardVariants = tv({
   slots: {
+    link: '',
     container:
       'group relative rounded-xl border border-custom-bg-menu overflow-hidden cursor-pointer transition-all duration-300 ease-out hover:border-2 hover:border-custom-bg-tab',
     image:
-      'absolute inset-0 w-full h-full object-center transition-transform duration-300 ease-out group-hover:scale-110',
+      'absolute inset-0 w-full h-full object-cover object-center transition-transform duration-300 ease-out group-hover:scale-110',
     gradientBase: 'absolute inset-0 transition-all duration-300 ease-out',
     gradientHover:
       'absolute inset-0 opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100',
@@ -36,16 +38,16 @@ const movieCardVariants = tv({
   variants: {
     size: {
       sm: {
-        container:
-          'w-full max-w-[160px] sm:max-w-[180px] md:max-w-[200px] h-[220px] sm:h-[250px] md:h-[280px]',
+        link: 'block w-full max-w-[160px] sm:max-w-[180px] md:max-w-[200px]',
+        container: 'w-full h-[220px] sm:h-[250px] md:h-[280px]',
       },
       md: {
-        container:
-          'w-full max-w-[180px] sm:max-w-[220px] md:max-w-[260px] lg:max-w-[280px] h-[250px] sm:h-[300px] md:h-[340px] lg:h-[360px]',
+        link: 'block w-full max-w-[180px] sm:max-w-[220px] md:max-w-[260px] lg:max-w-[280px]',
+        container: 'w-full h-[250px] sm:h-[300px] md:h-[340px] lg:h-[360px]',
       },
       lg: {
-        container:
-          'w-full max-w-[200px] sm:max-w-[260px] md:max-w-[300px] lg:max-w-[320px] h-[280px] sm:h-[360px] md:h-[400px] lg:h-[420px]',
+        link: 'block w-full max-w-[200px] sm:max-w-[260px] md:max-w-[300px] lg:max-w-[320px]',
+        container: 'w-full h-[280px] sm:h-[360px] md:h-[400px] lg:h-[420px]',
       },
     },
   },
@@ -55,21 +57,23 @@ const movieCardVariants = tv({
 })
 
 export interface MovieCardProps extends VariantProps<typeof movieCardVariants> {
+  id: string | number
   title: string
   category: string
   year: string
   rating: string | number
-  cover: string
+  image: string
   description?: string
   showRating?: boolean
 }
 
 export function MovieCard({
+  id,
   title,
   category,
   year,
   rating,
-  cover,
+  image,
   description,
   showRating = true,
   size = 'md',
@@ -77,56 +81,60 @@ export function MovieCard({
   const styles = movieCardVariants({ size })
 
   return (
-    <div className={styles.container()}>
-      {/* Cover Image */}
-      <img src={cover} alt={title} className={styles.image()} />
+    <Link to={`/movie-details/${id}`} className={styles.link()}>
+      <article className={styles.container()}>
+        {/* Cover Image */}
+        <img src={image} alt={title} className={styles.image()} />
 
-      {/* Gradient Shade */}
-      <div
-        className={styles.gradientBase()}
-        style={{
-          background:
-            'linear-gradient(180deg, rgba(9, 9, 16, 0) 0%, rgba(9, 9, 16, 0.9) 73%)',
-        }}
-      />
+        {/* Gradient Shade */}
+        <div
+          className={styles.gradientBase()}
+          style={{
+            background:
+              'linear-gradient(180deg, rgba(9, 9, 16, 0) 0%, rgba(9, 9, 16, 0.9) 73%)',
+          }}
+        />
 
-      {/* Hover Gradient Shade */}
-      <div
-        className={styles.gradientHover()}
-        style={{
-          background:
-            'linear-gradient(180deg, rgba(9, 9, 16, 0.6) 0%, rgba(9, 9, 16, 0.9) 50%, rgba(9, 9, 16, 1) 100%)',
-        }}
-      />
+        {/* Hover Gradient Shade */}
+        <div
+          className={styles.gradientHover()}
+          style={{
+            background:
+              'linear-gradient(180deg, rgba(9, 9, 16, 0.6) 0%, rgba(9, 9, 16, 0.9) 50%, rgba(9, 9, 16, 1) 100%)',
+          }}
+        />
 
-      {/* Rating Tag */}
-      {showRating && (
-        <div className={styles.ratingTag()}>
-          <div className="flex items-baseline gap-0.5">
-            <span className={styles.ratingNumber()}>{rating}</span>
-            <span className={styles.ratingSeparator()}>/</span>
-            <span className={styles.ratingMax()}>5</span>
-          </div>
-          <Star size={14} weight="fill" className={styles.ratingIcon()} />
-        </div>
-      )}
-
-      {/* Text Content */}
-      <div className={styles.content()}>
-        <div className={styles.contentWrapper()}>
-          <div className={styles.textWrapper()}>
-            <h3 className={styles.title()}>{title}</h3>
-            <div className={styles.metaContainer()}>
-              <span className={styles.category()}>{category}</span>
-              <div className={styles.separator()} />
-              <span className={styles.year()}>{year}</span>
+        {/* Rating Tag */}
+        {showRating && (
+          <div className={styles.ratingTag()}>
+            <div className="flex items-baseline gap-0.5">
+              <span className={styles.ratingNumber()}>{rating}</span>
+              <span className={styles.ratingSeparator()}>/</span>
+              <span className={styles.ratingMax()}>5</span>
             </div>
+            <Star size={14} weight="fill" className={styles.ratingIcon()} />
           </div>
+        )}
 
-          {/* Description - only shows on hover */}
-          {description && <p className={styles.description()}>{description}</p>}
+        {/* Text Content */}
+        <div className={styles.content()}>
+          <div className={styles.contentWrapper()}>
+            <div className={styles.textWrapper()}>
+              <h3 className={styles.title()}>{title}</h3>
+              <div className={styles.metaContainer()}>
+                <span className={styles.category()}>{category}</span>
+                <div className={styles.separator()} />
+                <span className={styles.year()}>{year}</span>
+              </div>
+            </div>
+
+            {/* Description - only shows on hover */}
+            {description && (
+              <p className={styles.description()}>{description}</p>
+            )}
+          </div>
         </div>
-      </div>
-    </div>
+      </article>
+    </Link>
   )
 }

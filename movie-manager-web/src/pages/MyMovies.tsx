@@ -6,6 +6,7 @@ import { Divider } from '../components/Divider'
 import Container from '../components/Container'
 import { TextBelow } from '../components/TextBelow'
 import { Link } from '../components/Link'
+
 export function MyMovies() {
   return (
     <Container>

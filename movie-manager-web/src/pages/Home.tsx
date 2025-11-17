@@ -40,11 +40,12 @@ export function Home() {
         {movies.map((movie) => (
           <MovieCard
             key={movie.id}
+            id={movie.id}
             title={movie.title}
             category={movie.category}
             year={movie.year}
             rating={movie.rating}
-            cover={movie.cover}
+            image={movie.image}
             description={movie.description}
           />
         ))}

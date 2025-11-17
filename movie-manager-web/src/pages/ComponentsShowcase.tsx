@@ -348,7 +348,7 @@ export function ComponentShowcase() {
               category="Drama"
               year="2023"
               rating="4.5"
-              cover={pobresCriaturas}
+              image={pobresCriaturas}
               size="sm"
             />
             <MovieCard
@@ -356,7 +356,7 @@ export function ComponentShowcase() {
               category="Drama"
               year="2023"
               rating="4.5"
-              cover={pobresCriaturas}
+              image={pobresCriaturas}
               size="md"
             />
             <MovieCard
@@ -364,7 +364,7 @@ export function ComponentShowcase() {
               category="Drama"
               year="2023"
               rating="4.5"
-              cover={pobresCriaturas}
+              image={pobresCriaturas}
               size="lg"
             />
           </div>
