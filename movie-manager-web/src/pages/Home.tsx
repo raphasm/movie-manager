@@ -1,8 +1,16 @@
-import { MagnifyingGlassIcon } from '@phosphor-icons/react'
+import {
+  FilmSlateIcon,
+  MagnifyingGlassIcon,
+  PlusIcon,
+} from '@phosphor-icons/react'
 import { tv } from 'tailwind-variants'
 import { Input } from '../components/Input'
 import { MovieCard } from '../components/MovieCard'
-import { movies } from '../utils/movies'
+import { getAllMovies } from '../api/get-all-movies'
+import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
+import { TextBelow } from '../components/TextBelow'
+import { Link } from '../components/Link'
 
 const homeVariants = tv({
   slots: {
@@ -19,6 +27,14 @@ const homeVariants = tv({
 
 export function Home() {
   const styles = homeVariants()
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const { data: result, isLoading } = useQuery({
+    queryKey: ['movies', searchQuery],
+    queryFn: () => getAllMovies({ query: searchQuery || null, page: 1 }),
+  })
+
+  const movies = result?.movies || []
 
   return (
     <main className={styles.main()}>
@@ -31,25 +47,54 @@ export function Home() {
           <Input
             icon={<MagnifyingGlassIcon size={20} weight="regular" />}
             placeholder="Pesquisar filme"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
       </div>
 
       {/* Movies Grid */}
-      <div className={styles.moviesGrid()}>
-        {movies.map((movie) => (
-          <MovieCard
-            key={movie.id}
-            id={movie.id}
-            title={movie.title}
-            category={movie.category}
-            year={movie.year}
-            rating={movie.rating}
-            image={movie.image}
-            description={movie.description}
-          />
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="flex justify-center items-center py-20">
+          <p className="text-custom-text-brand">Carregando filmes...</p>
+        </div>
+      ) : movies.length === 0 ? (
+        <div className="flex flex-col justify-center items-center h-full">
+          <FilmSlateIcon size={44} fill="#45455F" />
+          <TextBelow className="mt-5 text-custom-text-brand">
+            {`Nenhum filme encontrado com "${searchQuery}"`}
+          </TextBelow>
+          <TextBelow className="text-custom-text-brand">
+            Que tal tentar outra busca?
+          </TextBelow>
+
+          <div className="mt-4">
+            <Link
+              variant="muted"
+              className="flex items-center justify-center gap-1"
+              onClick={() => setSearchQuery('')}
+            >
+              <PlusIcon size={20} />
+              Limpar filtro
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div className={styles.moviesGrid()}>
+          {movies.map((movie) => (
+            <MovieCard
+              key={movie.id}
+              id={movie.id}
+              title={movie.title}
+              category={movie.category}
+              year={movie.year}
+              rating={movie.averageRating || '0'}
+              image={movie.imageUrl}
+              description={movie.description}
+            />
+          ))}
+        </div>
+      )}
     </main>
   )
 }

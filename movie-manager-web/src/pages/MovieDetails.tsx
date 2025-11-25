@@ -1,8 +1,9 @@
-import { useParams, useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, StarIcon } from '@phosphor-icons/react'
 import { tv } from 'tailwind-variants'
-import { movies } from '../utils/movies'
 import { Evaluations } from '../components/Evaluations'
+import { useQuery } from '@tanstack/react-query'
+import { getMovieDetails } from '../api/get-movie-details'
 
 const movieDetailsVariants = tv({
   slots: {
@@ -34,23 +35,52 @@ const movieDetailsVariants = tv({
 })
 
 export function MovieDetails() {
-  const { id } = useParams()
+  const { id: movieId } = useParams()
   const navigate = useNavigate()
   const styles = movieDetailsVariants()
 
-  const movie = movies.find((m) => m.id === id)
+  const {
+    data: movie,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['movie-details', movieId],
+    queryFn: () => getMovieDetails(movieId!),
+    enabled: !!movieId,
+  })
 
-  if (!movie) {
-    return (
-      <div className={styles.content()}>
-        <p className={styles.detailText()}>Filme não encontrado</p>
-      </div>
-    )
-  }
+  console.log('MovieDetails Debug:', {
+    movieId,
+    movie,
+    imageUrl: movie?.imageUrl,
+  })
 
   const handleBack = () => {
     navigate('/home')
   }
+
+  if (isLoading) {
+    return (
+      <div className={styles.content()}>
+        <p className={styles.detailText()}>Carregando filme...</p>
+      </div>
+    )
+  }
+
+  if (isError || !movie) {
+    return (
+      <div className={styles.content()}>
+        <p className={styles.detailText()}>Filme não encontrado</p>
+        <button onClick={handleBack} className={styles.backLink()}>
+          <ArrowLeft size={20} weight="regular" />
+          <span className="text-base leading-[1.6] font-body">Voltar</span>
+        </button>
+      </div>
+    )
+  }
+
+  const rating = movie.averageRating || 0
+  const fullStars = Math.floor(rating)
 
   return (
     <main className={styles.main()}>
@@ -58,22 +88,29 @@ export function MovieDetails() {
       <div
         className={styles.backdrop()}
         style={{
-          backgroundImage: `url(${movie.image})`,
+          backgroundImage: `url(${movie.imageUrl})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
       />
+
       <div className={styles.backdropGradient()} />
 
       {/* Movie Info Section */}
+
       <div className={styles.content()}>
         <div className={styles.movieSection()}>
           {/* Movie Image */}
           <div className={styles.imageWrapper()}>
             <img
-              src={movie.image}
+              src={movie.imageUrl}
               alt={movie.title}
               className={styles.movieImage()}
+              onError={(e) => {
+                console.error('Erro ao carregar imagem:', movie.imageUrl)
+                e.currentTarget.src =
+                  'https://placehold.co/381x490/1a1a2e/ffffff?text=Sem+Imagem'
+              }}
             />
           </div>
 
@@ -101,35 +138,27 @@ export function MovieDetails() {
                 {/* Score */}
                 <div className={styles.scoreSection()}>
                   <div className={styles.starsWrapper()}>
-                    <StarIcon
-                      size={24}
-                      weight="fill"
-                      className="text-custom-purple"
-                    />
-                    <StarIcon
-                      size={24}
-                      weight="fill"
-                      className="text-custom-purple"
-                    />
-                    <StarIcon
-                      size={24}
-                      weight="fill"
-                      className="text-custom-purple"
-                    />
-                    <StarIcon
-                      size={24}
-                      weight="fill"
-                      className="text-custom-purple"
-                    />
-                    <StarIcon
-                      size={24}
-                      weight="regular"
-                      className="text-custom-text-brand"
-                    />
+                    {[...Array(5)].map((_, index) => (
+                      <StarIcon
+                        key={index}
+                        size={24}
+                        weight={index < fullStars ? 'fill' : 'regular'}
+                        className={
+                          index < fullStars
+                            ? 'text-custom-purple'
+                            : 'text-custom-text-brand'
+                        }
+                      />
+                    ))}
                   </div>
                   <div className={styles.scoreText()}>
-                    <span className={styles.scoreNumber()}>{movie.rating}</span>
-                    <span className={styles.scoreCount()}>(5 avaliações)</span>
+                    <span className={styles.scoreNumber()}>
+                      {movie.averageRating || '0'}
+                    </span>
+                    <span className={styles.scoreCount()}>
+                      ({movie.ratingsCount}{' '}
+                      {movie.ratingsCount === 1 ? 'avaliação' : 'avaliações'})
+                    </span>
                   </div>
                 </div>
               </div>
@@ -142,7 +171,18 @@ export function MovieDetails() {
       </div>
 
       {/* Ratings Section */}
-      <Evaluations />
+      <Evaluations
+        movie={{
+          title: movie.title,
+          category: movie.category,
+          year: movie.year,
+          imageUrl: movie.imageUrl,
+        }}
+        onRateSubmit={(rating, comment) => {
+          console.log('Rating submitted:', { rating, comment, movieId })
+          // Aqui você pode adicionar a lógica para enviar a avaliação para a API
+        }}
+      />
       <div className="mb-20"></div>
     </main>
   )

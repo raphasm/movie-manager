@@ -14,6 +14,9 @@ import { useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { signUp } from '../api/sign-up'
+import { useMutation } from '@tanstack/react-query'
+import { AxiosError } from 'axios'
 
 const signUpFormSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
@@ -31,8 +34,35 @@ export function SignUp() {
     resolver: zodResolver(signUpFormSchema),
   })
 
-  function handleSubmit(payload: SignUpForm) {
-    console.log(payload)
+  const { mutateAsync: createUser } = useMutation({
+    mutationFn: signUp,
+  })
+
+  async function handleSignUp(data: SignUpForm) {
+    try {
+      await createUser({
+        email: data.email,
+        name: data.name,
+        password: data.password,
+      })
+
+      // Redirecionar para login após cadastro bem-sucedido
+      navigate('/sign-in')
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        const errorMessage =
+          error.response?.data?.message ||
+          'Esse e-mail já está cadastrado. Use outro e-mail para fazer o login'
+
+        form.setError('root', {
+          message: errorMessage,
+        })
+      } else {
+        form.setError('root', {
+          message: 'Erro inesperado. Tente novamente.',
+        })
+      }
+    }
   }
 
   const handleTabChange = (index: number) => {
@@ -60,7 +90,7 @@ export function SignUp() {
 
             <form
               className="flex flex-col gap-8"
-              onSubmit={form.handleSubmit(handleSubmit)}
+              onSubmit={form.handleSubmit(handleSignUp)}
             >
               <div className="flex flex-col gap-4 w-full">
                 <Input
@@ -106,7 +136,15 @@ export function SignUp() {
               </div>
 
               <div className="flex flex-col gap-3">
-                <Button type="submit">Criar conta</Button>
+                <Button disabled={form.formState.isSubmitting} type="submit">
+                  Criar conta
+                </Button>
+
+                {form.formState.errors.root && (
+                  <p className="text-sm text-red-500 text-center">
+                    {form.formState.errors.root.message}
+                  </p>
+                )}
 
                 <p className="text-xs text-center text-custom-text-gray">
                   Já tem uma conta?{' '}

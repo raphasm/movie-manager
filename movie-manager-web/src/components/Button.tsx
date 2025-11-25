@@ -27,6 +27,7 @@ const buttonVariants = tv({
     variant: 'primary',
     size: 'md',
     fullWidth: true,
+    disabled: false,
   },
 })
 

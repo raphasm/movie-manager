@@ -1,6 +1,9 @@
-import { Star } from '@phosphor-icons/react'
+import { Star, Heart } from '@phosphor-icons/react'
 import { tv, type VariantProps } from 'tailwind-variants'
 import { Link } from 'react-router-dom'
+import { IconButton } from './IconButton'
+import { FavoritesContext } from '../contexts/FavoritesContext'
+import { useContext } from 'react'
 
 const movieCardVariants = tv({
   slots: {
@@ -9,9 +12,12 @@ const movieCardVariants = tv({
       'group relative rounded-xl border border-custom-bg-menu overflow-hidden cursor-pointer transition-all duration-300 ease-out hover:border-2 hover:border-custom-bg-tab',
     image:
       'absolute inset-0 w-full h-full object-cover object-center transition-transform duration-300 ease-out group-hover:scale-110',
-    gradientBase: 'absolute inset-0 transition-all duration-300 ease-out',
+    gradientBase:
+      'absolute inset-0 transition-all duration-300 ease-out bg-gradient-to-b from-transparent via-transparent to-gray-darkest/90',
     gradientHover:
-      'absolute inset-0 opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100',
+      'absolute inset-0 opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100 bg-gradient-to-b from-gray-darkest/60 via-gray-darkest/90 to-gray-darkest',
+    actionButton:
+      'absolute top-2 left-2 opacity-0 scale-90 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:scale-100',
     ratingTag:
       'absolute top-2 right-2 flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full bg-gray-darkest/80',
     ratingNumber:
@@ -20,7 +26,7 @@ const movieCardVariants = tv({
       'text-xs leading-[1.276] font-title font-medium text-custom-text-tagline',
     ratingMax:
       'text-xs leading-[1.276] font-title font-medium text-custom-text-tagline',
-    ratingIcon: 'text-white sm:w-4 sm:h-4',
+    ratingIcon: 'text-purple-500 sm:w-4 sm:h-4',
     content:
       'absolute bottom-0 left-0 right-0 p-3 sm:p-4 lg:p-5 transition-all duration-300 ease-out group-hover:bottom-4',
     contentWrapper: 'flex flex-col gap-3 sm:gap-4 lg:gap-1',
@@ -79,6 +85,29 @@ export function MovieCard({
   size = 'md',
 }: MovieCardProps) {
   const styles = movieCardVariants({ size })
+  const { addFavorite, removeFavorite, isFavorite } =
+    useContext(FavoritesContext)
+
+  const isMovieFavorite = isFavorite(id)
+
+  function handleToggleFavorite(e: React.MouseEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (isMovieFavorite) {
+      removeFavorite(id)
+    } else {
+      addFavorite({
+        id,
+        title,
+        category,
+        year,
+        rating,
+        image,
+        description,
+      })
+    }
+  }
 
   return (
     <Link to={`/movie-details/${id}`} className={styles.link()}>
@@ -87,22 +116,28 @@ export function MovieCard({
         <img src={image} alt={title} className={styles.image()} />
 
         {/* Gradient Shade */}
-        <div
-          className={styles.gradientBase()}
-          style={{
-            background:
-              'linear-gradient(180deg, rgba(9, 9, 16, 0) 0%, rgba(9, 9, 16, 0.9) 73%)',
-          }}
-        />
+        <div className={styles.gradientBase()} />
 
         {/* Hover Gradient Shade */}
-        <div
-          className={styles.gradientHover()}
-          style={{
-            background:
-              'linear-gradient(180deg, rgba(9, 9, 16, 0.6) 0%, rgba(9, 9, 16, 0.9) 50%, rgba(9, 9, 16, 1) 100%)',
-          }}
-        />
+        <div className={styles.gradientHover()} />
+
+        {/* Action Button - Shows on hover */}
+        <div className={styles.actionButton()}>
+          <IconButton
+            icon={
+              <Heart
+                size={20}
+                weight={isMovieFavorite ? 'fill' : 'regular'}
+                className={
+                  isMovieFavorite ? 'text-purple-500' : 'text-purple-500'
+                }
+              />
+            }
+            variant="secondary"
+            size="md"
+            onClick={handleToggleFavorite}
+          />
+        </div>
 
         {/* Rating Tag */}
         {showRating && (

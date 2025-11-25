@@ -2,6 +2,8 @@ import { Star, StarIcon } from '@phosphor-icons/react'
 import { Button } from './Button'
 import { mockComments } from '../utils/comments'
 import { tv } from 'tailwind-variants'
+import { useState } from 'react'
+import { CreateEvaluation } from './CreateEvaluation'
 
 const evaluationsVariants = tv({
   slots: {
@@ -34,14 +36,30 @@ const evaluationsVariants = tv({
   },
 })
 
-export function Evaluations() {
+interface EvaluationsProps {
+  movie: {
+    title: string
+    category: string
+    year: string
+    imageUrl: string
+  }
+  onRateSubmit: (rating: number, comment: string) => void
+}
+
+export function Evaluations({ movie, onRateSubmit }: EvaluationsProps) {
   const styles = evaluationsVariants()
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   return (
     <section className={styles.ratingsSection()}>
       <div className={styles.ratingsHeader()}>
         <h2 className={styles.ratingsTitle()}>Avaliações</h2>
-        <Button variant="primary" size="md" fullWidth={false}>
+        <Button
+          variant="primary"
+          size="md"
+          fullWidth={false}
+          onClick={() => setIsModalOpen(true)}
+        >
           <Star size={20} weight="regular" />
           Avaliar filme
         </Button>
@@ -92,6 +110,13 @@ export function Evaluations() {
           </div>
         ))}
       </div>
+
+      <CreateEvaluation
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        movie={movie}
+        onSubmit={onRateSubmit}
+      />
     </section>
   )
 }

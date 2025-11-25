@@ -1,5 +1,5 @@
-import { prisma } from '../lib/prisma'
 import { hash } from 'bcryptjs'
+import { prisma } from '../lib/prisma'
 
 interface CreateUserParams {
   name: string
@@ -15,7 +15,9 @@ export async function createUser({ name, email, password }: CreateUserParams) {
   })
 
   if (userWithTheSameEmail) {
-    throw new Error('email already register.')
+    throw new Error(
+      'Erro ao criar conta. Este e-mail pode já estar cadastrado.',
+    )
   }
 
   const hashedPassword = await hash(password, 8)

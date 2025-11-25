@@ -6,8 +6,13 @@ import { Divider } from '../components/Divider'
 import Container from '../components/Container'
 import { TextBelow } from '../components/TextBelow'
 import { Link } from '../components/Link'
+import { FavoritesContext } from '../contexts/FavoritesContext'
+import { MovieCard } from '../components/MovieCard'
+import { useContext } from 'react'
 
 export function MyMovies() {
+  const { favorites } = useContext(FavoritesContext)
+
   return (
     <Container>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 sm:mb-12 lg:mb-[37px]">
@@ -24,26 +29,34 @@ export function MyMovies() {
         </div>
       </div>
 
-      <div className="flex flex-col justify-center items-center h-full">
-        <FilmSlateIcon size={44} fill="#45455F" />
-        <TextBelow className="mt-5 text-custom-text-brand">
-          Nenhum filme registrado.
-        </TextBelow>
-        <TextBelow className="text-custom-text-brand">
-          Que tal começar cadastrando seu primeiro filme?
-        </TextBelow>
+      {favorites.length === 0 ? (
+        <div className="flex flex-col justify-center items-center h-full">
+          <FilmSlateIcon size={44} fill="#45455F" />
+          <TextBelow className="mt-5 text-custom-text-brand">
+            Nenhum filme favorito.
+          </TextBelow>
+          <TextBelow className="text-custom-text-brand">
+            Adicione filmes aos favoritos clicando no coração!
+          </TextBelow>
 
-        <div className="mt-4">
-          <Link
-            variant="muted"
-            href="/"
-            className="flex items-center justify-center gap-1"
-          >
-            <PlusIcon size={20} />
-            Cadastrar novo
-          </Link>
+          <div className="mt-4">
+            <Link
+              variant="muted"
+              href="/home"
+              className="flex items-center justify-center gap-1"
+            >
+              <PlusIcon size={20} />
+              Ver filmes
+            </Link>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          {favorites.map((movie) => (
+            <MovieCard key={movie.id} {...movie} />
+          ))}
+        </div>
+      )}
     </Container>
   )
 }

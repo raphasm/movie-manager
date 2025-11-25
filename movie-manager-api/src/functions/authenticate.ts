@@ -14,13 +14,13 @@ export async function authenticate({ email, password }: AuthenticateParams) {
   })
 
   if (!user) {
-    throw new Error('Invalid credentials.')
+    throw new Error('Credenciais invalidas.')
   }
 
   const doesPasswordMatch = await compare(password, user.password)
 
   if (!doesPasswordMatch) {
-    throw new Error('Invalid credentials.')
+    throw new Error('Credenciais invalidas.')
   }
 
   return {

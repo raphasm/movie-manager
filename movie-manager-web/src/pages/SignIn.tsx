@@ -9,10 +9,13 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import z from 'zod'
+import { useMutation } from '@tanstack/react-query'
+import { signIn } from '../api/sign-in'
+import { AxiosError } from 'axios'
 
 const signInFormSchema = z.object({
   email: z.email('E-mail é obrigatório'),
-  password: z.string().min(6, 'A senha deve conter pelo menos 6 caracteres'),
+  password: z.string().min(6),
 })
 
 type SignInForm = z.infer<typeof signInFormSchema>
@@ -20,14 +23,36 @@ type SignInForm = z.infer<typeof signInFormSchema>
 export function SignIn() {
   const [showPassword, setShowPassword] = useState(false)
 
+  const { mutateAsync: authenticate } = useMutation({
+    mutationFn: signIn,
+  })
+
   const navigate = useNavigate()
 
   const form = useForm<SignInForm>({
     resolver: zodResolver(signInFormSchema),
   })
 
-  function handleSubmit(payload: SignInForm) {
-    console.log(payload)
+  async function handleSIgnIn(data: SignInForm) {
+    try {
+      await authenticate({ email: data.email, password: data.password })
+
+      navigate('/home')
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        const errorMessage =
+          error.response?.data?.message ||
+          'E-mail ou senha incorretos. Verifique suas credenciais e tente novamente.'
+
+        form.setError('root', {
+          message: errorMessage,
+        })
+      } else {
+        form.setError('root', {
+          message: 'Erro inesperado. Tente novamente.',
+        })
+      }
+    }
   }
 
   function handleTabChange(index: number) {
@@ -55,7 +80,7 @@ export function SignIn() {
 
             <form
               className="flex flex-col gap-3 w-full"
-              onSubmit={form.handleSubmit(handleSubmit)}
+              onSubmit={form.handleSubmit(handleSIgnIn)}
             >
               <div className="flex flex-col gap-4 w-full">
                 <Input
@@ -102,9 +127,15 @@ export function SignIn() {
               </div>
 
               <div className="flex flex-col gap-3 mt-4">
-                <Button disabled={form.formState.disabled} type="submit">
+                <Button disabled={form.formState.isSubmitting} type="submit">
                   Entrar
                 </Button>
+
+                {form.formState.errors.root && (
+                  <p className="text-sm text-red-500 text-center">
+                    {form.formState.errors.root.message}
+                  </p>
+                )}
 
                 <p className="text-xs text-center text-custom-text-gray">
                   Não tem uma conta?{' '}

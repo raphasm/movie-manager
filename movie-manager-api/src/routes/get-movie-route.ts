@@ -1,13 +1,12 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 import { getMovie } from '../functions/get-movie'
-import { verifyJwt } from '../middlewares/verify-jwt'
+import { getImageUrl } from '../utils/get-image-url'
 
 export const getMovieRoute: FastifyPluginAsyncZod = async (app) => {
   app.get(
     '/movies/:movieId',
     {
-      preHandler: [verifyJwt],
       schema: {
         summary: 'Get movie',
         tags: ['movie'],
@@ -23,6 +22,7 @@ export const getMovieRoute: FastifyPluginAsyncZod = async (app) => {
               category: z.string(),
               description: z.string(),
               filename: z.string(),
+              imageUrl: z.string(),
               averageRating: z.number(),
               evaluations: z.array(
                 z.object({
@@ -48,6 +48,7 @@ export const getMovieRoute: FastifyPluginAsyncZod = async (app) => {
         category: movies.category,
         description: movies.description,
         filename: movies.filename,
+        imageUrl: getImageUrl(movies.filename),
         averageRating: Number(movies.averageRating),
         evaluations: movies.evaluations.map((evaluation) => ({
           rating: Number(evaluation.rating),

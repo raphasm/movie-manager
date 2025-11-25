@@ -1,29 +1,43 @@
+import fastifyJwt from '@fastify/jwt'
+import fastifyMultipart from '@fastify/multipart'
+import fastifySwagger from '@fastify/swagger'
+import fastifySwaggerUi from '@fastify/swagger-ui'
 import fastify from 'fastify'
-import { env } from './env'
-import { createUserRoute } from './routes/create-user-route'
 import {
+  jsonSchemaTransform,
   serializerCompiler,
   validatorCompiler,
   ZodTypeProvider,
-  jsonSchemaTransform,
 } from 'fastify-type-provider-zod'
-import { createMoviesRoute } from './routes/create-movies-route'
-import fastifyJwt from '@fastify/jwt'
-import { authenticateRoute } from './routes/authenticate-route'
-import { getMovieRoute } from './routes/get-movie-route'
-import { getMyMoviesRoute } from './routes/get-my-movies-route'
-import { getMovieByTitleRoute } from './routes/get-movie-by-title-route'
-import { createEvaluationsRoute } from './routes/create-evaluations-route'
-import { getEvaluationsRoute } from './routes/get-evaluations-route'
-import { ratingsRoute } from './routes/ratings-route'
-import fastifyMultipart from '@fastify/multipart'
-import { uploadsFileRoute } from './routes/upload-file-route'
 import uploadConfig from './configs/upload'
-import fastifySwagger from '@fastify/swagger'
-import fastifySwaggerUi from '@fastify/swagger-ui'
+import { env } from './env'
+import { authenticateRoute } from './routes/authenticate-route'
+import { createEvaluationsRoute } from './routes/create-evaluations-route'
+import { createMoviesRoute } from './routes/create-movies-route'
+import { createUserRoute } from './routes/create-user-route'
+import { getEvaluationsRoute } from './routes/get-evaluations-route'
+import { getMovieByTitleRoute } from './routes/get-movie-by-title-route'
+import { getMovieRoute } from './routes/get-movie-route'
 import { getMoviesByCategoriesRoute } from './routes/get-movies-by-categories-route'
+import { getMyMoviesRoute } from './routes/get-my-movies-route'
+import { ratingsRoute } from './routes/ratings-route'
+import { uploadsFileRoute } from './routes/upload-file-route'
+
+import cors from '@fastify/cors'
+import fastifyStatic from '@fastify/static'
+import { getAllMoviesRoute } from './routes/get-all-movies-route'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
+
+app.register(cors, {
+  origin: 'http://localhost:5173',
+  credentials: true,
+})
+
+app.register(fastifyStatic, {
+  root: uploadConfig.UPLOADS_FOLDER,
+  prefix: '/uploads/',
+})
 app.register(fastifyMultipart, {
   limits: { fileSize: uploadConfig.MAX_FILE_SIZE },
   attachFieldsToBody: true,
@@ -77,6 +91,7 @@ app.register(getEvaluationsRoute)
 app.register(ratingsRoute)
 app.register(uploadsFileRoute)
 app.register(getMoviesByCategoriesRoute)
+app.register(getAllMoviesRoute)
 
 app.listen({ port: env.PORT }).then(() => {
   console.log('HTTP server running!')
