@@ -14,25 +14,24 @@ export const getMovieRoute: FastifyPluginAsyncZod = async (app) => {
           movieId: z.string(),
         }),
         response: {
-          200: z.array(
-            z.object({
-              id: z.string(),
-              title: z.string(),
-              year: z.string(),
-              category: z.string(),
-              description: z.string(),
-              filename: z.string(),
-              imageUrl: z.string(),
-              averageRating: z.number(),
-              evaluations: z.array(
-                z.object({
-                  name: z.string(),
-                  rating: z.coerce.number().nullable(),
-                  comment: z.string().nullable(),
-                }),
-              ),
-            }),
-          ),
+          200: z.object({
+            id: z.string(),
+            title: z.string(),
+            year: z.string(),
+            category: z.string(),
+            description: z.string(),
+            filename: z.string(),
+            imageUrl: z.string(),
+            averageRating: z.number(),
+            evaluations: z.array(
+              z.object({
+                userId: z.string(),
+                name: z.string(),
+                rating: z.coerce.number().nullable(),
+                comment: z.string().nullable(),
+              }),
+            ),
+          }),
         },
       },
     },
@@ -42,22 +41,18 @@ export const getMovieRoute: FastifyPluginAsyncZod = async (app) => {
       const { movie } = await getMovie({ movieId })
 
       const movieMapped = movie.map((movies) => ({
-        id: movies.id,
-        title: movies.title,
-        year: movies.year,
-        category: movies.category,
-        description: movies.description,
-        filename: movies.filename,
+        ...movies,
         imageUrl: getImageUrl(movies.filename),
         averageRating: Number(movies.averageRating),
         evaluations: movies.evaluations.map((evaluation) => ({
-          rating: Number(evaluation.rating),
-          comment: evaluation.comment,
+          userId: evaluation.user_id,
           name: evaluation.user.name,
+          rating: evaluation.rating ? Number(evaluation.rating) : null,
+          comment: evaluation.comment,
         })),
       }))
 
-      return reply.status(200).send(movieMapped)
+      return reply.status(200).send(movieMapped[0])
     },
   )
 }

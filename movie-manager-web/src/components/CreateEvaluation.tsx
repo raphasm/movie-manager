@@ -1,17 +1,20 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { tv } from 'tailwind-variants'
 import { X } from '@phosphor-icons/react'
 import { IconButton } from './IconButton'
 import { RatingStars } from './RatingStars'
 import { TextArea } from './TextArea'
 import { Button } from './Button'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import z from 'zod'
 
 const createEvaluationVariants = tv({
   slots: {
     overlay:
       'fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4',
     content:
-      'bg-[#0F0F1A] border border-[#1A1B2D] rounded-[18px] w-full max-w-[600px] max-h-[90vh] overflow-y-auto relative',
+      'bg-[#0F0F1A] border border-[#1A1B2D] rounded-[18px] w-full max-w-[600px] max-h-[90vh] overflow-hidden relative',
     closeButton: 'absolute top-5 right-5',
     container: 'p-10 flex flex-col gap-8',
     title:
@@ -34,6 +37,7 @@ interface CreateEvaluationProps {
   isOpen: boolean
   onClose: () => void
   movie: {
+    id: string | number
     title: string
     category: string
     year: string
@@ -42,6 +46,13 @@ interface CreateEvaluationProps {
   onSubmit: (rating: number, comment: string) => void
 }
 
+const evaluationFormSchema = z.object({
+  rating: z.number().min(1, 'Selecione uma nota'),
+  comment: z.string().max(500, 'Comentário muito longo').optional(),
+})
+
+type EvaluationForm = z.infer<typeof evaluationFormSchema>
+
 export function CreateEvaluation({
   isOpen,
   onClose,
@@ -49,33 +60,35 @@ export function CreateEvaluation({
   onSubmit,
 }: CreateEvaluationProps) {
   const styles = createEvaluationVariants()
-  const [rating, setRating] = useState(0)
-  const [comment, setComment] = useState('')
+  const form = useForm<EvaluationForm>({
+    resolver: zodResolver(evaluationFormSchema),
+    defaultValues: {
+      rating: 0,
+      comment: '',
+    },
+  })
 
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden'
     } else {
       document.body.style.overflow = 'unset'
+      form.reset()
     }
-
     return () => {
       document.body.style.overflow = 'unset'
     }
-  }, [isOpen])
+  }, [isOpen, form])
 
-  const handleSubmit = () => {
-    if (rating > 0) {
-      onSubmit(rating, comment)
-      setRating(0)
-      setComment('')
-      onClose()
-    }
+  function handleSubmit(data: EvaluationForm) {
+    onSubmit(data.rating, data.comment || '')
+    form.reset()
+    onClose()
   }
 
   if (!isOpen) return null
 
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  function handleOverlayClick(e: React.MouseEvent<HTMLDivElement>) {
     if (e.target === e.currentTarget) {
       onClose()
     }
@@ -97,10 +110,7 @@ export function CreateEvaluation({
 
           <form
             className={styles.form()}
-            onSubmit={(e) => {
-              e.preventDefault()
-              handleSubmit()
-            }}
+            onSubmit={form.handleSubmit(handleSubmit)}
           >
             <div className={styles.movieContent()}>
               <img
@@ -124,24 +134,41 @@ export function CreateEvaluation({
 
                 <div className={styles.score()}>
                   <span className={styles.scoreLabel()}>Sua avaliação:</span>
-                  <RatingStars rating={rating} onRatingChange={setRating} />
+                  <RatingStars
+                    rating={form.watch('rating')}
+                    onRatingChange={(value) => form.setValue('rating', value)}
+                  />
+                  {form.formState.errors.rating && (
+                    <span className="text-custom-error text-xs mt-1 block">
+                      {form.formState.errors.rating.message}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
 
             <TextArea
               placeholder="Comentário"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
+              value={form.watch('comment')}
+              onChange={(e) => form.setValue('comment', e.target.value)}
               className="h-40"
+              maxLength={500}
+              error={!!form.formState.errors.comment?.message}
             />
+            {form.formState.errors.comment?.message && (
+              <span className="flex justify-center text-custom-error text-sm mt-1 w-full">
+                {form.formState.errors.comment.message}
+              </span>
+            )}
 
             <Button
               type="submit"
               variant="primary"
               size="md"
               fullWidth={false}
-              disabled={rating === 0}
+              disabled={
+                form.watch('rating') === 0 || form.formState.isSubmitting
+              }
             >
               Publicar
             </Button>

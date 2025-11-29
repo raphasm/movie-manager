@@ -20,9 +20,9 @@ export function FavoritesProvider({ children }: FavoriteProviderProps) {
   function addFavorite(movie: Movies) {
     setFavorites((prev) => {
       // Evita duplicadas
-      if (prev.some((fav) => fav.id === movie.id)) {
-        return prev
-      }
+      const find = prev.some((fav) => fav.id === movie.id)
+
+      if (find) return prev
       return [...prev, movie]
     })
   }

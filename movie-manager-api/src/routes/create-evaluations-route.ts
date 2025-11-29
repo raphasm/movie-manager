@@ -1,7 +1,7 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
-import { verifyJwt } from '../middlewares/verify-jwt'
 import { createEvaluations } from '../functions/create-evaluations'
+import { verifyJwt } from '../middlewares/verify-jwt'
 
 export const createEvaluationsRoute: FastifyPluginAsyncZod = async (app) => {
   app.post(
@@ -15,6 +15,7 @@ export const createEvaluationsRoute: FastifyPluginAsyncZod = async (app) => {
           movieId: z.string(),
         }),
         body: z.object({
+          user_id: z.string(),
           rating: z.coerce.number().min(1).max(5).positive().nullable(),
           comment: z.string(),
         }),

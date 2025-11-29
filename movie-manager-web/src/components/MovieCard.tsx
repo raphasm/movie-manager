@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { IconButton } from './IconButton'
 import { FavoritesContext } from '../contexts/FavoritesContext'
 import { useContext } from 'react'
+import { toast } from 'sonner'
 
 const movieCardVariants = tv({
   slots: {
@@ -96,6 +97,7 @@ export function MovieCard({
 
     if (isMovieFavorite) {
       removeFavorite(id)
+      toast.success('Filme removido com sucesso')
     } else {
       addFavorite({
         id,
@@ -106,6 +108,7 @@ export function MovieCard({
         image,
         description,
       })
+      toast.success('Filme adicionado com sucesso!')
     }
   }
 
@@ -121,7 +124,7 @@ export function MovieCard({
         {/* Hover Gradient Shade */}
         <div className={styles.gradientHover()} />
 
-        {/* Action Button - Shows on hover */}
+        {/* Action Button - Adicionar aos favoritos */}
         <div className={styles.actionButton()}>
           <IconButton
             icon={

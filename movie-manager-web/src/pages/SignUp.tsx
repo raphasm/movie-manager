@@ -39,6 +39,11 @@ export function SignUp() {
   })
 
   async function handleSignUp(data: SignUpForm) {
+    console.log('DEBUG SIGNUP:', {
+      nome: data.name,
+      email: data.email,
+      senha: data.password,
+    })
     try {
       await createUser({
         email: data.email,

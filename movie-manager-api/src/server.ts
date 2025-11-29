@@ -26,12 +26,12 @@ import { uploadsFileRoute } from './routes/upload-file-route'
 import cors from '@fastify/cors'
 import fastifyStatic from '@fastify/static'
 import { getAllMoviesRoute } from './routes/get-all-movies-route'
+import { getProfileRoute } from './routes/get-profile-route'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
 app.register(cors, {
   origin: 'http://localhost:5173',
-  credentials: true,
 })
 
 app.register(fastifyStatic, {
@@ -92,6 +92,7 @@ app.register(ratingsRoute)
 app.register(uploadsFileRoute)
 app.register(getMoviesByCategoriesRoute)
 app.register(getAllMoviesRoute)
+app.register(getProfileRoute)
 
 app.listen({ port: env.PORT }).then(() => {
   console.log('HTTP server running!')

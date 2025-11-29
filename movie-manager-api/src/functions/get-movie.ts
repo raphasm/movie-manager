@@ -14,6 +14,7 @@ export async function getMovie({ movieId }: GetMovieParams) {
         select: {
           comment: true,
           rating: true,
+          user_id: true,
           user: {
             select: {
               name: true,

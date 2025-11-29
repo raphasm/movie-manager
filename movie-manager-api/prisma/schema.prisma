@@ -21,10 +21,11 @@ enum Categories {
 }
 
 model User {
-  id       String @id @default(uuid())
+  id       String  @id @default(uuid())
   name     String
-  email    String @unique
+  email    String  @unique
   password String
+  imageUrl String?
 
   movies      Movie[]
   evaluations Evaluation[]

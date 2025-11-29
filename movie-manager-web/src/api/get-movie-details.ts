@@ -10,12 +10,16 @@ export interface GetMovieDetailsResponse {
   imageUrl: string
   averageRating: number | null
   ratingsCount: number
+
+  evaluations: {
+    userId?: string
+    name: string
+    rating?: number | null
+    comment?: string | null
+  }[]
 }
 
 export async function getMovieDetails(movieId: string) {
-  const response = await api.get<GetMovieDetailsResponse[]>(
-    `/movies/${movieId}`,
-  )
-
-  return response.data[0]
+  const response = await api.get<GetMovieDetailsResponse>(`/movies/${movieId}`)
+  return response.data
 }

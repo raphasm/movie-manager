@@ -2,8 +2,15 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, StarIcon } from '@phosphor-icons/react'
 import { tv } from 'tailwind-variants'
 import { Evaluations } from '../components/Evaluations'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getMovieDetails } from '../api/get-movie-details'
+import { createEvaluation } from '../api/create-evaluation'
+import { getUserId } from '../utils/get-user-id'
+
+interface EvaluationData {
+  rating: number
+  comment: string
+}
 
 const movieDetailsVariants = tv({
   slots: {
@@ -37,6 +44,7 @@ const movieDetailsVariants = tv({
 export function MovieDetails() {
   const { id: movieId } = useParams()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const styles = movieDetailsVariants()
 
   const {
@@ -49,6 +57,43 @@ export function MovieDetails() {
     enabled: !!movieId,
   })
 
+  function handleMutationSuccess(
+    _: unknown,
+    { rating, comment }: EvaluationData,
+  ) {
+    const currentUserId = getUserId()
+
+    queryClient.setQueryData(
+      ['movie-details', movieId],
+      (oldData: typeof movie) => {
+        if (!oldData) return oldData
+        return {
+          ...oldData,
+          evaluations: [
+            {
+              userId: currentUserId || undefined,
+              name: 'Você',
+              rating,
+              comment,
+            },
+            ...(oldData.evaluations || []),
+          ],
+        }
+      },
+    )
+    queryClient.invalidateQueries({ queryKey: ['movie-details', movieId] })
+  }
+
+  const { mutateAsync: submitEvaluation } = useMutation({
+    mutationFn: ({ rating, comment }: EvaluationData) =>
+      createEvaluation({
+        rating: String(rating),
+        comment,
+        movieId: movieId!,
+      }),
+    onSuccess: handleMutationSuccess,
+  })
+
   console.log('MovieDetails Debug:', {
     movieId,
     movie,
@@ -57,6 +102,10 @@ export function MovieDetails() {
 
   const handleBack = () => {
     navigate('/home')
+  }
+
+  function handleRateSubmit(rating: number, comment: string) {
+    submitEvaluation({ rating, comment })
   }
 
   if (isLoading) {
@@ -172,16 +221,10 @@ export function MovieDetails() {
 
       {/* Ratings Section */}
       <Evaluations
-        movie={{
-          title: movie.title,
-          category: movie.category,
-          year: movie.year,
-          imageUrl: movie.imageUrl,
-        }}
-        onRateSubmit={(rating, comment) => {
-          console.log('Rating submitted:', { rating, comment, movieId })
-          // Aqui você pode adicionar a lógica para enviar a avaliação para a API
-        }}
+        movie={{ ...movie }}
+        evaluations={movie.evaluations}
+        currentUserId={getUserId()}
+        onRateSubmit={handleRateSubmit}
       />
       <div className="mb-20"></div>
     </main>

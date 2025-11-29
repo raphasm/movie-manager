@@ -1,5 +1,6 @@
-- [] Criar tabela pivo MyMovies para listar os filmes que o usuário salvou
+- [] criar paginação para evaluations com 5 items por página
 - [] Adicionar As avaliações "Evaluations" e comentários quando vc busca um filme pelo id
+- [] adicionar quantos filmes o usuário avaliou
 - [x] Poder buscar os filmes por categoria
 
 - [] tirar a coluna filename do banco de dados e deixar apenas a imageUrl
