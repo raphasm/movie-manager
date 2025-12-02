@@ -15,7 +15,6 @@ export const createEvaluationsRoute: FastifyPluginAsyncZod = async (app) => {
           movieId: z.string(),
         }),
         body: z.object({
-          user_id: z.string(),
           rating: z.coerce.number().min(1).max(5).positive().nullable(),
           comment: z.string(),
         }),
@@ -38,7 +37,7 @@ export const createEvaluationsRoute: FastifyPluginAsyncZod = async (app) => {
       await createEvaluations({
         rating,
         comment,
-        user_id: request.user.sub,
+        userId: request.user.sub,
         movieId,
       })
 

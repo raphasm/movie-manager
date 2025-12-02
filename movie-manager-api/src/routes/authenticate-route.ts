@@ -30,13 +30,21 @@ export const authenticateRoute: FastifyPluginAsyncZod = async (app) => {
         {
           sign: {
             sub: user.id,
+            expiresIn: '7d',
           },
         },
       )
 
-      return reply.status(200).send({
-        token,
-      })
+      return reply
+        .setCookie('token', token, {
+          path: '/',
+          httpOnly: true,
+          secure: false,
+          sameSite: 'lax',
+          maxAge: 60 * 60 * 24 * 7, // 7 days
+        })
+        .status(200)
+        .send({ token })
     },
   )
 }

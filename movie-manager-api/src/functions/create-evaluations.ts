@@ -3,14 +3,14 @@ import { prisma } from '../lib/prisma'
 interface CreateEvaluationsParams {
   rating: number | null
   comment: string | null
-  user_id: string
+  userId: string
   movieId: string
 }
 
 export async function createEvaluations({
   rating,
   comment,
-  user_id,
+  userId,
   movieId,
 }: CreateEvaluationsParams) {
   const movie = await prisma.movie.findUnique({
@@ -27,7 +27,7 @@ export async function createEvaluations({
     data: {
       rating,
       comment,
-      user_id: user_id,
+      user_id: userId,
       movie_id: movieId,
     },
   })

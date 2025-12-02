@@ -1,3 +1,4 @@
+import fastifyCookie from '@fastify/cookie'
 import fastifyJwt from '@fastify/jwt'
 import fastifyMultipart from '@fastify/multipart'
 import fastifySwagger from '@fastify/swagger'
@@ -27,11 +28,13 @@ import cors from '@fastify/cors'
 import fastifyStatic from '@fastify/static'
 import { getAllMoviesRoute } from './routes/get-all-movies-route'
 import { getProfileRoute } from './routes/get-profile-route'
+import { logoutRoute } from './routes/logout-route'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
 app.register(cors, {
   origin: 'http://localhost:5173',
+  credentials: true,
 })
 
 app.register(fastifyStatic, {
@@ -45,8 +48,14 @@ app.register(fastifyMultipart, {
 app.setSerializerCompiler(serializerCompiler)
 app.setValidatorCompiler(validatorCompiler)
 
+app.register(fastifyCookie)
+
 app.register(fastifyJwt, {
   secret: env.JWT_SECRET,
+  cookie: {
+    cookieName: 'token',
+    signed: false,
+  },
 })
 
 app.register(fastifySwagger, {
@@ -93,6 +102,7 @@ app.register(uploadsFileRoute)
 app.register(getMoviesByCategoriesRoute)
 app.register(getAllMoviesRoute)
 app.register(getProfileRoute)
+app.register(logoutRoute)
 
 app.listen({ port: env.PORT }).then(() => {
   console.log('HTTP server running!')
