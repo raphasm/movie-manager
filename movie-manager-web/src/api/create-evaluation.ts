@@ -1,8 +1,8 @@
 import { api } from '../utils/api'
 
 export interface CreateEvaluationBody {
-  rating?: string | null
-  comment: string
+  rating?: number | null
+  comment?: string | null
   movieId: string
 }
 

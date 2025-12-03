@@ -46,6 +46,7 @@ export function IconButton({
   return (
     <button
       className={iconButtonVariants({ variant, size, className, disabled })}
+      disabled={disabled === true}
       {...props}
     >
       {icon}

@@ -11,6 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import z from 'zod'
 import { signIn } from '../api/sign-in'
 import { AxiosError } from 'axios'
+import { useQueryClient } from '@tanstack/react-query'
 
 const signInFormSchema = z.object({
   email: z.email('E-mail é obrigatório'),
@@ -23,6 +24,7 @@ export function SignIn() {
   const [showPassword, setShowPassword] = useState(false)
 
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   const form = useForm<SignInForm>({
     resolver: zodResolver(signInFormSchema),
@@ -30,14 +32,13 @@ export function SignIn() {
 
   async function handleSignIn(data: SignInForm) {
     try {
-      const response = await signIn({
+      await signIn({
         email: data.email,
         password: data.password,
       })
-      if (response?.token) {
-        localStorage.setItem('token', response.token)
-        navigate('/home')
-      }
+      // Invalida a query do /me para buscar os dados do usuário logado
+      await queryClient.invalidateQueries({ queryKey: ['me'] })
+      navigate('/home')
     } catch (error) {
       if (error instanceof AxiosError) {
         const errorMessage =

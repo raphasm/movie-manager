@@ -5,7 +5,7 @@ import { Evaluations } from '../components/Evaluations'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getMovieDetails } from '../api/get-movie-details'
 import { createEvaluation } from '../api/create-evaluation'
-import { getUserId } from '../utils/get-user-id'
+import { useAuth } from '../contexts/AuthContext'
 
 interface EvaluationData {
   rating: number
@@ -44,9 +44,21 @@ const movieDetailsVariants = tv({
 export function MovieDetails() {
   const { id: movieId } = useParams()
   const navigate = useNavigate()
+  // Cliente do React Query para manipular o cache de dados
   const queryClient = useQueryClient()
   const styles = movieDetailsVariants()
 
+  const { userId } = useAuth()
+  /**
+   * useQuery - Hook para buscar dados do servidor
+   *
+   * - queryKey: Identificador único para esta query no cache
+   * - queryFn: Função que faz a requisição para a API
+   * - enabled: Só executa a query se movieId existir
+   * - data: Dados retornados da API
+   * - isLoading: true enquanto está carregando
+   * - isError: true se houve erro na requisição
+   */
   const {
     data: movie,
     isLoading,
@@ -57,37 +69,74 @@ export function MovieDetails() {
     enabled: !!movieId,
   })
 
+  /**
+   * handleMutationSuccess - Callback executado após criar avaliação com sucesso
+   *
+   * @param _ - Resposta da API (não utilizada)
+   * @param rating - Nota dada pelo usuário
+   * @param comment - Comentário do usuário
+   *
+   * Esta função faz uma "atualização otimista":
+   * 1. Atualiza o cache local IMEDIATAMENTE (sem esperar o servidor)
+   * 2. A avaliação aparece na tela instantaneamente
+   * 3. Depois invalida a query para sincronizar com o servidor
+   */
   function handleMutationSuccess(
     _: unknown,
     { rating, comment }: EvaluationData,
   ) {
-    const currentUserId = getUserId()
-
+    /**
+     * setQueryData - Atualiza o cache local do React Query
+     *
+     * Recebe a queryKey e uma função que retorna os novos dados.
+     * A função recebe os dados antigos (oldData) e retorna os novos.
+     */
     queryClient.setQueryData(
       ['movie-details', movieId],
       (oldData: typeof movie) => {
         if (!oldData) return oldData
+
+        // Retorna os dados antigos + nova avaliação no início da lista
         return {
-          ...oldData,
+          ...oldData, // Mantém todos os dados do filme
           evaluations: [
+            // Nova avaliação adicionada no INÍCIO da lista
             {
-              userId: currentUserId || undefined,
-              name: 'Você',
-              rating,
-              comment,
+              userId: userId || undefined, // ID do usuário (para mostrar tag "Você")
+              name: 'Você', // Nome exibido temporariamente
+              rating, // Nota da avaliação
+              comment, // Comentário da avaliação
             },
+            // Espalha as avaliações antigas depois da nova
             ...(oldData.evaluations || []),
           ],
         }
       },
     )
+
+    /**
+     * invalidateQueries - Marca a query como "stale" (desatualizada)
+     *
+     * Isso faz o React Query buscar dados novos do servidor em background,
+     * garantindo que o cache fique sincronizado com o banco de dados.
+     * (ex: o nome real do usuário pode ser diferente de "Você")
+     */
     queryClient.invalidateQueries({ queryKey: ['movie-details', movieId] })
   }
 
+  /**
+   * useMutation - Hook para operações que modificam dados (POST, PUT, DELETE)
+   *
+   * Diferente do useQuery (que é para GET), o useMutation é para criar/atualizar/deletar.
+   *
+   * - mutationFn: Função que faz a requisição para a API
+   * - onSuccess: Callback executado quando a requisição é bem-sucedida
+   * - mutateAsync: Função para disparar a mutation (retorna Promise)
+   */
   const { mutateAsync: submitEvaluation } = useMutation({
     mutationFn: ({ rating, comment }: EvaluationData) =>
       createEvaluation({
-        rating: String(rating),
+        rating,
         comment,
         movieId: movieId!,
       }),
@@ -98,12 +147,20 @@ export function MovieDetails() {
     movieId,
     movie,
     imageUrl: movie?.imageUrl,
+    currentUserId: userId,
+    evaluationsUserIds: movie?.evaluations?.map((e) => e.userId),
   })
 
+  // Função para voltar à página inicial
   const handleBack = () => {
     navigate('/home')
   }
 
+  /**
+   * handleRateSubmit - Função chamada quando o usuário envia a avaliação
+   *
+   * Recebe rating e comment do modal de avaliação e dispara a mutation.
+   */
   function handleRateSubmit(rating: number, comment: string) {
     submitEvaluation({ rating, comment })
   }
@@ -223,7 +280,7 @@ export function MovieDetails() {
       <Evaluations
         movie={{ ...movie }}
         evaluations={movie.evaluations}
-        currentUserId={getUserId()}
+        currentUserId={userId}
         onRateSubmit={handleRateSubmit}
       />
       <div className="mb-20"></div>

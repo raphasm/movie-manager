@@ -8,9 +8,11 @@ import { Input } from '../components/Input'
 import { MovieCard } from '../components/MovieCard'
 import { getAllMovies } from '../api/get-all-movies'
 import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
 import { TextBelow } from '../components/TextBelow'
 import { Link } from '../components/Link'
+import z from 'zod'
+import { useSearchParams } from 'react-router-dom'
+import { Pagination } from '../components/Pagination'
 
 const homeVariants = tv({
   slots: {
@@ -27,14 +29,122 @@ const homeVariants = tv({
 
 export function Home() {
   const styles = homeVariants()
-  const [searchQuery, setSearchQuery] = useState('')
+  /**
+   * useSearchParams - Hook do React Router para manipular query strings da URL
+   *
+   * searchParams: objeto para LER os parâmetros (ex: ?page=2&query=matrix)
+   * setSearchParams: função para ALTERAR os parâmetros da URL
+   *
+   * Exemplo de URL: /home?page=2&query=matrix
+   */
+  const [searchParams, setSearchParams] = useSearchParams()
 
+  /**
+   * Obtém o parâmetro "query" da URL para filtrar filmes
+   * Se não existir, retorna null
+   *
+   * Exemplo: /home?query=matrix → searchQuery = "matrix"
+   */
+  const searchQuery = searchParams.get('query')
+
+  /**
+   * Converte o parâmetro "page" da URL para um índice (0-based)
+   *
+   * z.coerce.number() → Converte string para número automaticamente
+   * .transform((page) => page - 1) → Subtrai 1 para converter para 0-based
+   * .parse() → Executa a validação e transformação
+   *
+   * Exemplo:
+   *   URL: ?page=1 → pageIndex = 0
+   *   URL: ?page=2 → pageIndex = 1
+   *   URL: (sem page) → usa '1' como default → pageIndex = 0
+   *
+   * Por que 0-based? Arrays e APIs geralmente começam em 0
+   */
+  const pageIndex = z.coerce
+    .number()
+    .transform((page) => page - 1)
+    .parse(searchParams.get('page') ?? '1')
+
+  /**
+   * useQuery - Hook do React Query para buscar dados do servidor
+   *
+   * queryKey: ['movies', pageIndex, searchQuery]
+   *   - Identificador único para o cache
+   *   - Quando pageIndex ou searchQuery mudam, refaz a requisição automaticamente
+   *
+   * queryFn: Função que faz a requisição para a API
+   *   - page: pageIndex + 1 → Converte de volta para 1-based (API espera 1, 2, 3...)
+   *
+   * Retorna:
+   *   - data: Os dados retornados (aqui chamamos de "result")
+   *   - isLoading: true enquanto está carregando
+   */
   const { data: result, isLoading } = useQuery({
-    queryKey: ['movies', searchQuery],
-    queryFn: () => getAllMovies({ query: searchQuery || null, page: 1 }),
+    queryKey: ['movies', pageIndex, searchQuery],
+    queryFn: () =>
+      getAllMovies({
+        query: searchQuery,
+        page: pageIndex + 1, // API espera página 1-based
+      }),
   })
 
+  // Extrai o array de filmes do resultado (ou array vazio se não existir)
   const movies = result?.movies || []
+
+  /**
+   * handlePaginate - Atualiza a página na URL quando usuário clica na paginação
+   *
+   * @param pageIndex - Índice da página (0-based)
+   *
+   * Fluxo:
+   * 1. Recebe pageIndex (ex: 0, 1, 2)
+   * 2. Converte para 1-based (ex: 1, 2, 3)
+   * 3. Atualiza a URL (ex: ?page=2)
+   * 4. React Query detecta mudança na queryKey e refaz a requisição
+   */
+  function handlePaginate(pageIndex: number) {
+    setSearchParams((state) => {
+      state.set('page', (pageIndex + 1).toString())
+      return state
+    })
+  }
+
+  /**
+   * handleSearch - Atualiza a busca na URL quando usuário digita
+   *
+   * @param value - Texto digitado no campo de busca
+   *
+   * Fluxo:
+   * 1. Se tem texto → adiciona ?query=texto
+   * 2. Se está vazio → remove o parâmetro query
+   * 3. Sempre reseta para página 1 (nova busca = começa do início)
+   *
+   * Exemplo:
+   *   Digitar "matrix" → URL vira /home?query=matrix&page=1
+   *   Apagar tudo → URL vira /home?page=1
+   */
+  function handleSearch(value: string) {
+    setSearchParams((prev) => {
+      if (value) {
+        prev.set('query', value)
+      } else {
+        prev.delete('query')
+      }
+      prev.set('page', '1') // Reseta para página 1 ao buscar
+      return prev
+    })
+  }
+
+  /**
+   * handleClearFilters - Limpa todos os filtros da URL
+   *
+   * Remove todos os parâmetros (page, query, etc.)
+   * URL volta para /home (sem query string)
+   */
+  function handleClearFilters() {
+    setSearchParams({})
+  }
 
   return (
     <main className={styles.main()}>
@@ -47,8 +157,8 @@ export function Home() {
           <Input
             icon={<MagnifyingGlassIcon size={20} weight="regular" />}
             placeholder="Pesquisar filme"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchQuery || ''}
+            onChange={(e) => handleSearch(e.target.value)}
           />
         </div>
       </div>
@@ -72,7 +182,7 @@ export function Home() {
             <Link
               variant="muted"
               className="flex items-center justify-center gap-1"
-              onClick={() => setSearchQuery('')}
+              onClick={handleClearFilters}
             >
               <PlusIcon size={20} />
               Limpar filtro
@@ -80,20 +190,32 @@ export function Home() {
           </div>
         </div>
       ) : (
-        <div className={styles.moviesGrid()}>
-          {movies.map((movie) => (
-            <MovieCard
-              key={movie.id}
-              id={movie.id}
-              title={movie.title}
-              category={movie.category}
-              year={movie.year}
-              rating={movie.averageRating || '0'}
-              image={movie.imageUrl}
-              description={movie.description}
+        <>
+          <div className={styles.moviesGrid()}>
+            {movies.map((movie) => (
+              <MovieCard
+                key={movie.id}
+                id={movie.id}
+                title={movie.title}
+                category={movie.category}
+                year={movie.year}
+                rating={movie.averageRating || '0'}
+                image={movie.imageUrl}
+                description={movie.description}
+              />
+            ))}
+          </div>
+
+          {/* Paginação */}
+          {result && (
+            <Pagination
+              pageIndex={pageIndex}
+              perPage={result.meta.perPage}
+              totalCount={result.meta.totalCount}
+              onPageChange={handlePaginate}
             />
-          ))}
-        </div>
+          )}
+        </>
       )}
     </main>
   )

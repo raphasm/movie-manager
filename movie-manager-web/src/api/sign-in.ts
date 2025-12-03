@@ -5,10 +5,7 @@ export interface SignInBody {
   password: string
 }
 
-export async function signIn({
-  password,
-  email,
-}: SignInBody): Promise<{ token: string }> {
-  const response = await api.post('/sessions', { password, email })
-  return response.data
+export async function signIn({ password, email }: SignInBody): Promise<void> {
+  await api.post('/sessions', { password, email })
+  // Cookie é setado automaticamente pelo backend
 }

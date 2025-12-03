@@ -37,10 +37,10 @@ const navbarVariants = tv({
 
 interface NavbarProps {
   activeMenu?: 'explore' | 'my-movies'
-  userName?: string
+  currentUserId?: string | null
 }
 
-export function Navbar({ activeMenu, userName = 'Jordan' }: NavbarProps) {
+export function Navbar({ activeMenu, currentUserId }: NavbarProps) {
   const styles = navbarVariants()
 
   return (
@@ -80,10 +80,10 @@ export function Navbar({ activeMenu, userName = 'Jordan' }: NavbarProps) {
       <div className={styles.userContainer()}>
         {/* User */}
         <div className={styles.userInfo()}>
-          <span className={styles.userName()}>Olá, {userName}</span>
+          <span className={styles.userName()}>Olá, {currentUserId}</span>
           <img
             src={userAvatar}
-            alt={userName}
+            alt={currentUserId || undefined}
             className={styles.userAvatar()}
           />
         </div>

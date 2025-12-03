@@ -4,6 +4,7 @@ import { Button } from './Button'
 import { tv } from 'tailwind-variants'
 import { useState } from 'react'
 import { CreateEvaluation } from './CreateEvaluation'
+import { LoginRequiredModal } from './LoginRequiredModal'
 
 const evaluationsVariants = tv({
   slots: {
@@ -64,6 +65,17 @@ export function Evaluations({
 }: EvaluationsProps) {
   const styles = evaluationsVariants()
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
+
+  const isAuthenticated = currentUserId !== null
+
+  function handleRateClick() {
+    if (isAuthenticated) {
+      setIsModalOpen(true)
+    } else {
+      setIsLoginModalOpen(true)
+    }
+  }
 
   return (
     <section className={styles.ratingsSection()}>
@@ -73,7 +85,7 @@ export function Evaluations({
           variant="primary"
           size="md"
           fullWidth={false}
-          onClick={() => setIsModalOpen(true)}
+          onClick={handleRateClick}
         >
           <Star size={20} weight="regular" />
           Avaliar filme
@@ -138,6 +150,11 @@ export function Evaluations({
         onClose={() => setIsModalOpen(false)}
         movie={movie}
         onSubmit={onRateSubmit}
+      />
+
+      <LoginRequiredModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
       />
     </section>
   )
