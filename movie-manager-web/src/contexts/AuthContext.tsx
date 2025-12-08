@@ -7,6 +7,7 @@ interface AuthContextData {
   user: User | null
   userId: string | null
   isAuthenticated: boolean
+  isAdmin: boolean
   isLoading: boolean
   logout: () => Promise<void>
 }
@@ -48,6 +49,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         user: user ?? null,
         userId: user?.userId ?? null,
         isAuthenticated: !!user && !isError,
+        isAdmin: user?.role === 'ADMIN',
         isLoading,
         logout,
       }}

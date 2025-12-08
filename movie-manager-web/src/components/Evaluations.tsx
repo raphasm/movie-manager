@@ -1,10 +1,11 @@
-import { Star, StarIcon, UserIcon } from '@phosphor-icons/react'
+import { Star, StarIcon, User } from '@phosphor-icons/react'
 import { Button } from './Button'
-// import { mockComments } from '../utils/comments'
 import { tv } from 'tailwind-variants'
 import { useState } from 'react'
 import { CreateEvaluation } from './CreateEvaluation'
 import { LoginRequiredModal } from './LoginRequiredModal'
+import { Avatar } from './Avatar'
+import { YouBadge } from './Badge'
 
 const evaluationsVariants = tv({
   slots: {
@@ -16,12 +17,11 @@ const evaluationsVariants = tv({
     ratingsList: 'flex flex-col gap-3 items-center',
     commentCard:
       'relative flex flex-col items-stretch min-w-[1070px] lg:flex-row gap-12 p-7 bg-custom-bg-menu rounded-xl',
-    userSection: 'flex gap-4 w-full lg:w-[216px] flex-shrink-0',
+    userSection: 'flex gap-2 w-full lg:w-[216px] flex-shrink-0 items-center',
     userImage: 'w-12 h-12 rounded-md border border-custom-purple object-cover',
     userInfo: 'flex flex-col gap-1',
     userNameWrapper: 'flex items-center gap-2',
-    userName:
-      'text-base leading-[1.276] font-title font-bold text-custom-text-tagline',
+    userName: 'text-[16px] text-custom-text-tagline',
     youTag:
       'px-1.5 py-0 bg-custom-purple rounded-full text-xs leading-[1.6] font-body text-custom-text-tagline',
     userStats: 'text-sm leading-[1.6] font-body text-custom-text-brand',
@@ -69,7 +69,7 @@ export function Evaluations({
 
   const isAuthenticated = currentUserId !== null
 
-  function handleRateClick() {
+  function handleOpenEvaluationModal() {
     if (isAuthenticated) {
       setIsModalOpen(true)
     } else {
@@ -85,7 +85,7 @@ export function Evaluations({
           variant="primary"
           size="md"
           fullWidth={false}
-          onClick={handleRateClick}
+          onClick={handleOpenEvaluationModal}
         >
           <Star size={20} weight="regular" />
           Avaliar filme
@@ -98,50 +98,76 @@ export function Evaluations({
             Nenhuma avaliação ainda.
           </p>
         ) : (
-          evaluations.map((comment, idx) => (
-            <div key={idx} className={styles.commentCard()}>
-              {/* User Section */}
-              <div className={styles.userSection()}>
-                <UserIcon
-                  size={10}
-                  className={styles.userImage()}
-                  alt="imagem de perfil"
-                  weight="thin"
-                />
+          /**
+           * Usamos uma arrow function com {} (em vez de =>) para poder
+           * executar lógica antes do return (verificar se tem comentário)
+           */
+          evaluations.map((evaluation, idx) => {
+            /**
+             * trim() - Remove espaços em branco do início e fim
+             * Isso garante que:
+             * - "  " (só espaços) vira "" (string vazia)
+             */
+            const trimmedComment = evaluation.comment?.trim()
 
-                <div className={styles.userInfo()}>
-                  <div className={styles.userNameWrapper()}>
-                    <span className={styles.userName()}>{comment.name}</span>
-                    {comment.userId === currentUserId && (
-                      <span className={styles.youTag()}>Você</span>
-                    )}
+            /**
+             * Verificação de comentário vazio
+             *
+             * !trimmedComment é true quando:
+             * - trimmedComment é "" (string vazia)
+             * - trimmedComment é undefined
+             * - trimmedComment é null
+             *
+             * Se não tem comentário, retorna null (não renderiza nada)
+             * O React ignora null no JSX, então o card simplesmente não aparece
+             */
+            if (!trimmedComment) {
+              return null
+            }
+
+            // Se tem comentário, renderiza o card da avaliação
+            return (
+              <div key={idx} className={styles.commentCard()}>
+                {/* User Section */}
+                <div className={styles.userSection()}>
+                  <Avatar size="md" icon={<User size={28} weight="light" />} />
+
+                  <div className={styles.userInfo()}>
+                    <div className={styles.userNameWrapper()}>
+                      <span className={styles.userName()}>
+                        {evaluation.name}
+                      </span>
+                      {evaluation.userId === currentUserId && (
+                        <YouBadge size="md" />
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div className={styles.divider()} />
+
+                {/* Comment Content */}
+                <div className={styles.commentContent()}>
+                  <p className={styles.commentText()}>{trimmedComment}</p>
+                  <div className={styles.ratingTag()}>
+                    <div className="flex items-baseline gap-0.5">
+                      <span className={styles.ratingNumber()}>
+                        {evaluation.rating ?? 0}
+                      </span>
+                      <span className={styles.ratingSeparator()}>/</span>
+                      <span className={styles.ratingSeparator()}>5</span>
+                    </div>
+                    <StarIcon
+                      size={16}
+                      weight="fill"
+                      className="text-custom-purple-tab flex-shrink-0"
+                    />
                   </div>
                 </div>
               </div>
-
-              {/* Divider */}
-              <div className={styles.divider()} />
-
-              {/* Comment Content */}
-              <div className={styles.commentContent()}>
-                <p className={styles.commentText()}>{comment.comment}</p>
-                <div className={styles.ratingTag()}>
-                  <div className="flex items-baseline gap-0.5">
-                    <span className={styles.ratingNumber()}>
-                      {comment.rating ?? 0}
-                    </span>
-                    <span className={styles.ratingSeparator()}>/</span>
-                    <span className={styles.ratingSeparator()}>5</span>
-                  </div>
-                  <StarIcon
-                    size={16}
-                    weight="fill"
-                    className="text-custom-purple-tab flex-shrink-0"
-                  />
-                </div>
-              </div>
-            </div>
-          ))
+            )
+          })
         )}
       </div>
 

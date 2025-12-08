@@ -3,8 +3,10 @@ import { tv, type VariantProps } from 'tailwind-variants'
 import { Link } from 'react-router-dom'
 import { IconButton } from './IconButton'
 import { FavoritesContext } from '../contexts/FavoritesContext'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { toast } from 'sonner'
+import { useAuth } from '../contexts/AuthContext'
+import { LoginRequiredModal } from './LoginRequiredModal'
 
 const movieCardVariants = tv({
   slots: {
@@ -88,12 +90,20 @@ export function MovieCard({
   const styles = movieCardVariants({ size })
   const { addFavorite, removeFavorite, isFavorite } =
     useContext(FavoritesContext)
+  const { isAuthenticated } = useAuth()
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
 
   const isMovieFavorite = isFavorite(id)
 
   function handleToggleFavorite(e: React.MouseEvent) {
     e.preventDefault()
     e.stopPropagation()
+
+    // Se não estiver logado, abre o modal de login
+    if (!isAuthenticated) {
+      setIsLoginModalOpen(true)
+      return
+    }
 
     if (isMovieFavorite) {
       removeFavorite(id)
@@ -113,66 +123,74 @@ export function MovieCard({
   }
 
   return (
-    <Link to={`/movie-details/${id}`} className={styles.link()}>
-      <article className={styles.container()}>
-        {/* Cover Image */}
-        <img src={image} alt={title} className={styles.image()} />
+    <>
+      <Link to={`/movie-details/${id}`} className={styles.link()}>
+        <article className={styles.container()}>
+          {/* Cover Image */}
+          <img src={image} alt={title} className={styles.image()} />
 
-        {/* Gradient Shade */}
-        <div className={styles.gradientBase()} />
+          {/* Gradient Shade */}
+          <div className={styles.gradientBase()} />
 
-        {/* Hover Gradient Shade */}
-        <div className={styles.gradientHover()} />
+          {/* Hover Gradient Shade */}
+          <div className={styles.gradientHover()} />
 
-        {/* Action Button - Adicionar aos favoritos */}
-        <div className={styles.actionButton()}>
-          <IconButton
-            icon={
-              <Heart
-                size={20}
-                weight={isMovieFavorite ? 'fill' : 'regular'}
-                className={
-                  isMovieFavorite ? 'text-purple-500' : 'text-purple-500'
-                }
-              />
-            }
-            variant="secondary"
-            size="md"
-            onClick={handleToggleFavorite}
-          />
-        </div>
-
-        {/* Rating Tag */}
-        {showRating && (
-          <div className={styles.ratingTag()}>
-            <div className="flex items-baseline gap-0.5">
-              <span className={styles.ratingNumber()}>{rating}</span>
-              <span className={styles.ratingSeparator()}>/</span>
-              <span className={styles.ratingMax()}>5</span>
-            </div>
-            <Star size={14} weight="fill" className={styles.ratingIcon()} />
+          {/* Action Button - Adicionar aos favoritos */}
+          <div className={styles.actionButton()}>
+            <IconButton
+              icon={
+                <Heart
+                  size={20}
+                  weight={isMovieFavorite ? 'fill' : 'regular'}
+                  className={
+                    isMovieFavorite ? 'text-purple-500' : 'text-purple-500'
+                  }
+                />
+              }
+              variant="secondary"
+              size="md"
+              onClick={handleToggleFavorite}
+            />
           </div>
-        )}
 
-        {/* Text Content */}
-        <div className={styles.content()}>
-          <div className={styles.contentWrapper()}>
-            <div className={styles.textWrapper()}>
-              <h3 className={styles.title()}>{title}</h3>
-              <div className={styles.metaContainer()}>
-                <span className={styles.category()}>{category}</span>
-                <div className={styles.separator()} />
-                <span className={styles.year()}>{year}</span>
+          {/* Rating Tag */}
+          {showRating && (
+            <div className={styles.ratingTag()}>
+              <div className="flex items-baseline gap-0.5">
+                <span className={styles.ratingNumber()}>{rating}</span>
+                <span className={styles.ratingSeparator()}>/</span>
+                <span className={styles.ratingMax()}>5</span>
               </div>
+              <Star size={14} weight="fill" className={styles.ratingIcon()} />
             </div>
+          )}
 
-            {/* Description - only shows on hover */}
-            {description && (
-              <p className={styles.description()}>{description}</p>
-            )}
+          {/* Text Content */}
+          <div className={styles.content()}>
+            <div className={styles.contentWrapper()}>
+              <div className={styles.textWrapper()}>
+                <h3 className={styles.title()}>{title}</h3>
+                <div className={styles.metaContainer()}>
+                  <span className={styles.category()}>{category}</span>
+                  <div className={styles.separator()} />
+                  <span className={styles.year()}>{year}</span>
+                </div>
+              </div>
+
+              {/* Description - only shows on hover */}
+              {description && (
+                <p className={styles.description()}>{description}</p>
+              )}
+            </div>
           </div>
-        </div>
-      </article>
-    </Link>
+        </article>
+      </Link>
+
+      {/* Login Required Modal - FORA do Link para evitar navegação */}
+      <LoginRequiredModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+      />
+    </>
   )
 }

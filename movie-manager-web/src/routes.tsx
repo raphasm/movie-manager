@@ -3,30 +3,48 @@ import { AuthLayout } from './pages/layouts/AuthLayout'
 import { SignIn } from './pages/SignIn'
 import { SignUp } from './pages/SignUp'
 import { ComponentShowcase } from './pages/ComponentsShowcase'
-import { AppLayout } from './pages/layouts/AppLayout'
+import { ExploreLayout } from './pages/layouts/ExploreLayout'
+import { MyMoviesLayout } from './pages/layouts/MyMoviesLayout'
+import { DashboardLayout } from './pages/layouts/DashboardLayout'
 import { MyMovies } from './pages/MyMovies'
 import { Home } from './pages/Home'
 import { MovieDetails } from './pages/MovieDetails'
+import { Dashboard } from './pages/Dashboard'
 
 export const router = createBrowserRouter([
   {
     path: '/',
     element: <AuthLayout />,
     children: [
-      { index: true, element: <Navigate to="/sign-in" replace /> },
+      { element: <Navigate to="/sign-in" replace /> },
       { path: 'sign-in', element: <SignIn /> },
       { path: 'sign-up', element: <SignUp /> },
     ],
   },
 
+  // Rotas de Explorar (Home, MovieDetails)
   {
     path: '/',
-    element: <AppLayout />,
+    element: <ExploreLayout />,
     children: [
-      { path: 'my-movies', element: <MyMovies /> },
+      { index: true, element: <Navigate to="/home" replace /> },
       { path: 'home', element: <Home /> },
       { path: 'movie-details/:id', element: <MovieDetails /> },
     ],
+  },
+
+  // Rotas de Meus Filmes
+  {
+    path: '/',
+    element: <MyMoviesLayout />,
+    children: [{ path: 'my-movies', element: <MyMovies /> }],
+  },
+
+  // Rotas de Dashboard (Admin)
+  {
+    path: '/',
+    element: <DashboardLayout />,
+    children: [{ path: 'dashboard', element: <Dashboard /> }],
   },
 
   {

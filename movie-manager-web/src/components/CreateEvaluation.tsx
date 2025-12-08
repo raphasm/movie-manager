@@ -80,9 +80,33 @@ export function CreateEvaluation({
     }
   }, [isOpen, form])
 
+  /**
+   * handleSubmit - Processa o envio da avaliação
+   *
+   * @param data - Dados do formulário validados pelo Zod (rating e comment)
+   *
+   * Fluxo:
+   * 1. Faz trim() no comentário para remover espaços em branco
+   * 2. Envia a avaliação para o componente pai
+   * 3. Reseta o formulário para os valores iniciais
+   * 4. Fecha o modal
+   */
   function handleSubmit(data: EvaluationForm) {
-    onSubmit(data.rating, data.comment || '')
+    /**
+     * trim() - Remove espaços em branco do início e fim da string
+     *
+     * Exemplos:
+     * "  Filme ótimo  ".trim() → "Filme ótimo"
+     * "   ".trim() → "" (string vazia)
+     */
+    const trimmedComment = data.comment?.trim() || ''
+
+    // Envia rating e comentário limpo para o componente pai (MovieDetails)
+    onSubmit(data.rating, trimmedComment)
+
+    // Reseta o formulário (limpa rating e comment)
     form.reset()
+
     onClose()
   }
 

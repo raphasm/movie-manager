@@ -5,9 +5,10 @@ export interface User {
   name: string
   email: string
   imageUrl: string | null
+  role: 'ADMIN' | 'USER'
 }
 
-export async function getMe(): Promise<User> {
+export async function getMe() {
   const response = await api.get<User>('/me')
   return response.data
 }

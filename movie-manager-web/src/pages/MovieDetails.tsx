@@ -18,17 +18,17 @@ const movieDetailsVariants = tv({
     backdrop: 'absolute inset-0 w-full h-[618px] opacity-5',
     backdropGradient:
       'absolute inset-0 w-full h-[618px] bg-gradient-to-b from-transparent to-custom-bg',
-    content: 'relative max-w-[1070px] mx-auto pt-16 pb-20',
-    movieSection: 'flex flex-col lg:flex-row items-center gap-12',
-    imageWrapper: 'w-full lg:w-[381px] lg:h-[490px] flex-shrink-0',
+    content: 'relative max-w-[1090px] mx-auto pt-11 pb-15',
+    movieSection: 'flex flex-col lg:flex-row lg:items-center gap-12',
+    imageWrapper: 'w-full lg:w-[370px] lg:h-[470px] flex-shrink-0',
     movieImage: 'w-full h-full rounded-xl object-cover',
-    infoWrapper: 'flex-1 flex flex-col gap-5 py-3 self-stretch',
+    infoWrapper: 'flex-1 flex flex-col gap-3',
     backLink:
       'flex items-center gap-2 text-custom-text-brand hover:text-custom-text-light transition-colors cursor-pointer',
-    textContent: 'flex flex-col gap-10',
+    textContent: 'flex flex-col gap-5',
     aboutSection: 'flex flex-col gap-4',
     title:
-      'text-2xl lg:text-[32px] leading-[1.276] font-title font-bold text-custom-text-tagline',
+      'text-2xl lg:text-[30px] leading-[1.276] font-title font-bold text-custom-text-tagline',
     details: 'flex flex-col gap-0.5',
     detailText: 'text-base leading-[1.6] font-body text-custom-text-brand',
     scoreSection: 'flex items-center gap-3',
@@ -49,6 +49,7 @@ export function MovieDetails() {
   const styles = movieDetailsVariants()
 
   const { userId } = useAuth()
+  // const { isAuthenticated } = useAuth()
   /**
    * useQuery - Hook para buscar dados do servidor
    *
@@ -270,7 +271,11 @@ export function MovieDetails() {
               </div>
 
               {/* Description */}
-              <p className={styles.description()}>{movie.description}</p>
+              <p className={styles.description()}>
+                {movie.description.length > 882
+                  ? `${movie.description.slice(0, 882)}...`
+                  : movie.description}
+              </p>
             </div>
           </div>
         </div>

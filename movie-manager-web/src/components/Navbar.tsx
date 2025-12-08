@@ -1,8 +1,17 @@
-import { SignOutIcon, PopcornIcon, FilmSlateIcon } from '@phosphor-icons/react'
+import {
+  SignOutIcon,
+  PopcornIcon,
+  FilmSlateIcon,
+  UserIcon,
+  ChartBarIcon,
+} from '@phosphor-icons/react'
 import { tv } from 'tailwind-variants'
 import logoImage from '../assets/logo.svg'
-import userAvatar from '../assets/movies/user-avatar.png'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { Avatar } from './Avatar'
+import { logout } from '../api/logout'
+import { useMutation } from '@tanstack/react-query'
+import { useAuth } from '../contexts/AuthContext'
 
 const navbarVariants = tv({
   slots: {
@@ -36,17 +45,31 @@ const navbarVariants = tv({
 })
 
 interface NavbarProps {
-  activeMenu?: 'explore' | 'my-movies'
+  activeMenu?: 'explore' | 'my-movies' | 'dashboard'
   currentUserId?: string | null
 }
 
 export function Navbar({ activeMenu, currentUserId }: NavbarProps) {
   const styles = navbarVariants()
+  const navigate = useNavigate()
+  const { isAdmin, user } = useAuth()
+
+  // DEBUG: Verificar dados do usuário
+  console.log('Navbar Debug:', { user, isAdmin, role: user?.role })
+
+  const { mutateAsync: logoutFn } = useMutation({
+    mutationFn: logout,
+    onSuccess: () => {
+      navigate('/sign-in', { replace: true })
+    },
+  })
 
   return (
     <nav className={styles.nav()}>
       {/* Logo */}
-      <img src={logoImage} alt="Logo" className={styles.logo()} />
+      <Link to="/home">
+        <img src={logoImage} alt="Logo" className={styles.logo()} />
+      </Link>
 
       {/* Menu */}
       <div className={styles.menuContainer()}>
@@ -74,6 +97,25 @@ export function Navbar({ activeMenu, currentUserId }: NavbarProps) {
           />
           Meus filmes
         </Link>
+
+        {/* Dashboard - Apenas para admins */}
+        {isAdmin && (
+          <Link
+            to="/dashboard"
+            className={styles.menuButton({
+              active: activeMenu === 'dashboard',
+            })}
+          >
+            <ChartBarIcon
+              size={20}
+              weight="regular"
+              className={styles.menuIcon({
+                active: activeMenu === 'dashboard',
+              })}
+            />
+            Dashboard
+          </Link>
+        )}
       </div>
 
       {/* User Info */}
@@ -81,18 +123,18 @@ export function Navbar({ activeMenu, currentUserId }: NavbarProps) {
         {/* User */}
         <div className={styles.userInfo()}>
           <span className={styles.userName()}>Olá, {currentUserId}</span>
-          <img
-            src={userAvatar}
-            alt={currentUserId || undefined}
-            className={styles.userAvatar()}
-          />
+          <Avatar size="sm" icon={<UserIcon size={24} weight="light" />} />
         </div>
 
         {/* Divider */}
         <div className={styles.divider()}></div>
 
         {/* Logout Button */}
-        <button className={styles.logoutButton()} title="Sair">
+        <button
+          className={styles.logoutButton()}
+          onClick={() => logoutFn()}
+          title="Sair"
+        >
           <SignOutIcon
             size={20}
             weight="regular"

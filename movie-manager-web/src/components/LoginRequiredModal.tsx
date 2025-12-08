@@ -79,8 +79,7 @@ export function LoginRequiredModal({
           <h2 className={styles.title()}>Faça login para avaliar</h2>
 
           <p className={styles.description()}>
-            Para deixar sua avaliação sobre este filme, você precisa estar
-            logado na sua conta.
+            Para fazer essa ação, você precisa estar logado na sua conta.
           </p>
 
           <div className={styles.buttons()}>
