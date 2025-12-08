@@ -17,6 +17,7 @@ export const getProfileRoute: FastifyPluginAsyncZod = async (app) => {
             name: z.string(),
             imageUrl: z.string().nullable(),
             email: z.string(),
+            role: z.enum(['ADMIN', 'USER']),
           }),
         },
       },
@@ -31,6 +32,7 @@ export const getProfileRoute: FastifyPluginAsyncZod = async (app) => {
         name: user.name,
         imageUrl: user.imageUrl,
         email: user.email,
+        role: user.role,
       })
     },
   )

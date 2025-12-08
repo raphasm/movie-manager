@@ -26,7 +26,9 @@ export const authenticateRoute: FastifyPluginAsyncZod = async (app) => {
       const { user } = await authenticate({ email, password })
 
       const token = await reply.jwtSign(
-        {},
+        {
+          role: user.role,
+        },
         {
           sign: {
             sub: user.id,

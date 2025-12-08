@@ -1,7 +1,9 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
-import { createMovies } from '../functions/create-movies'
+import { createMovieWithUpload } from '../functions/create-movie-with-upload'
 import { verifyJwt } from '../middlewares/verify-jwt'
+import { parseMultipartMovie } from '../utils/parse-multipart-movie'
+import { validateMovieData } from '../validators/movie-validator'
 
 export const createMoviesRoute: FastifyPluginAsyncZod = async (app) => {
   app.post(
@@ -9,40 +11,52 @@ export const createMoviesRoute: FastifyPluginAsyncZod = async (app) => {
     {
       preHandler: [verifyJwt],
       schema: {
-        summary: 'Create movies',
+        summary: 'Create movies with image upload',
         tags: ['movie'],
-        body: z.object({
-          title: z.string(),
-          year: z.string(),
-          category: z.string(),
-          description: z.string(),
-          filename: z.string().min(10),
-        }),
+        consumes: ['multipart/form-data'],
         response: {
-          201: z.string(),
+          201: z.object({
+            movieId: z.string(),
+          }),
+          400: z.object({
+            error: z.string(),
+          }),
         },
       },
     },
 
     async (request, reply) => {
-      const { title, year, category, description, filename } = request.body
-
-      // const user_id = request.user.sub
-
       if (!request.user.sub) {
-        throw new Error('Unauthorized')
+        return reply.status(401).send({ error: 'Unauthorized' })
       }
 
-      await createMovies({
-        title,
-        year,
-        category,
-        description,
-        filename,
-        user_id: request.user.sub,
-      })
+      try {
+        // Parse dos dados do multipart
+        const movieData = await parseMultipartMovie(request)
 
-      return reply.status(201).send()
+        // Validação dos dados
+        const validation = validateMovieData(movieData)
+        if (!validation.success) {
+          return reply.status(400).send({ error: validation.error! })
+        }
+
+        // Cria o filme com upload da imagem
+        const { movieId } = await createMovieWithUpload({
+          title: movieData.title,
+          year: movieData.year,
+          category: movieData.category,
+          description: movieData.description,
+          fileData: movieData.fileData!,
+          userId: request.user.sub,
+        })
+
+        return reply.status(201).send({ movieId })
+      } catch (error: any) {
+        console.error(error)
+        return reply
+          .status(400)
+          .send({ error: error.message || 'Erro ao criar filme' })
+      }
     },
   )
 }

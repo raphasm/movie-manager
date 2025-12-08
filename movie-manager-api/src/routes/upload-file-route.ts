@@ -1,13 +1,14 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
+import { z } from 'zod'
 import { uploadFile } from '../functions/upload-file'
-import { z, ZodError } from 'zod'
-import uploadConfig from '../configs/upload'
-// import { DiskStorage } from '../providers/disk-storage'
+import { verifyJwt } from '../middlewares/verify-jwt'
+import { verifyUserRole } from '../middlewares/verify-user-role'
 
 export const uploadsFileRoute: FastifyPluginAsyncZod = async (app) => {
   app.post(
     '/upload',
     {
+      preHandler: [verifyJwt, verifyUserRole('ADMIN')],
       schema: {
         response: {
           201: z.array(

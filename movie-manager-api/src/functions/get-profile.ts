@@ -14,6 +14,7 @@ export async function getProfile({ userId }: GetProfileParams) {
       name: true,
       email: true,
       imageUrl: true,
+      role: true,
     },
   })
 

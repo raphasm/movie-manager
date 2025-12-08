@@ -43,7 +43,6 @@ app.register(fastifyStatic, {
 })
 app.register(fastifyMultipart, {
   limits: { fileSize: uploadConfig.MAX_FILE_SIZE },
-  attachFieldsToBody: true,
 })
 app.setSerializerCompiler(serializerCompiler)
 app.setValidatorCompiler(validatorCompiler)
