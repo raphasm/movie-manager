@@ -15,7 +15,7 @@ import { useQueryClient } from '@tanstack/react-query'
 
 const signInFormSchema = z.object({
   email: z.email('E-mail é obrigatório'),
-  password: z.string().min(6),
+  password: z.string().min(1, 'Senha é obrigatória'),
 })
 
 type SignInForm = z.infer<typeof signInFormSchema>

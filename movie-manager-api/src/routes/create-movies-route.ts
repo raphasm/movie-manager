@@ -2,6 +2,7 @@ import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 import { createMovieWithUpload } from '../functions/create-movie-with-upload'
 import { verifyJwt } from '../middlewares/verify-jwt'
+import { verifyUserRole } from '../middlewares/verify-user-role'
 import { parseMultipartMovie } from '../utils/parse-multipart-movie'
 import { validateMovieData } from '../validators/movie-validator'
 
@@ -9,7 +10,7 @@ export const createMoviesRoute: FastifyPluginAsyncZod = async (app) => {
   app.post(
     '/movies',
     {
-      preHandler: [verifyJwt],
+      preHandler: [verifyJwt, verifyUserRole('ADMIN')],
       schema: {
         summary: 'Create movies with image upload',
         tags: ['movie'],

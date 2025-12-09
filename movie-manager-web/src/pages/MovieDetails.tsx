@@ -144,16 +144,8 @@ export function MovieDetails() {
     onSuccess: handleMutationSuccess,
   })
 
-  console.log('MovieDetails Debug:', {
-    movieId,
-    movie,
-    imageUrl: movie?.imageUrl,
-    currentUserId: userId,
-    evaluationsUserIds: movie?.evaluations?.map((e) => e.userId),
-  })
-
   // Função para voltar à página inicial
-  const handleBack = () => {
+  function handleBack() {
     navigate('/home')
   }
 

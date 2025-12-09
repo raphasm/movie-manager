@@ -4,6 +4,7 @@ import {
   FilmSlateIcon,
   UserIcon,
   ChartBarIcon,
+  SignInIcon,
 } from '@phosphor-icons/react'
 import { tv } from 'tailwind-variants'
 import logoImage from '../assets/logo.svg'
@@ -12,6 +13,8 @@ import { Avatar } from './Avatar'
 import { logout } from '../api/logout'
 import { useMutation } from '@tanstack/react-query'
 import { useAuth } from '../contexts/AuthContext'
+import { AdminBadge } from './Badge'
+import { Button } from './Button'
 
 const navbarVariants = tv({
   slots: {
@@ -52,10 +55,10 @@ interface NavbarProps {
 export function Navbar({ activeMenu, currentUserId }: NavbarProps) {
   const styles = navbarVariants()
   const navigate = useNavigate()
-  const { isAdmin, user } = useAuth()
+  const { isAdmin } = useAuth()
 
   // DEBUG: Verificar dados do usuário
-  console.log('Navbar Debug:', { user, isAdmin, role: user?.role })
+  // console.log('Navbar Debug:', { user, isAdmin, role: user?.role })
 
   const { mutateAsync: logoutFn } = useMutation({
     mutationFn: logout,
@@ -120,27 +123,40 @@ export function Navbar({ activeMenu, currentUserId }: NavbarProps) {
 
       {/* User Info */}
       <div className={styles.userContainer()}>
-        {/* User */}
-        <div className={styles.userInfo()}>
-          <span className={styles.userName()}>Olá, {currentUserId}</span>
-          <Avatar size="sm" icon={<UserIcon size={24} weight="light" />} />
-        </div>
+        {currentUserId ? (
+          <>
+            {/* User logado */}
+            <div className={styles.userInfo()}>
+              <span className={styles.userName()}>
+                Olá, {currentUserId} {isAdmin && <AdminBadge size="md" />}
+              </span>
+              <Avatar size="sm" icon={<UserIcon size={24} weight="light" />} />
+            </div>
 
-        {/* Divider */}
-        <div className={styles.divider()}></div>
+            <div className={styles.divider()}></div>
 
-        {/* Logout Button */}
-        <button
-          className={styles.logoutButton()}
-          onClick={() => logoutFn()}
-          title="Sair"
-        >
-          <SignOutIcon
-            size={20}
-            weight="regular"
-            className={styles.logoutIcon()}
-          />
-        </button>
+            {/* Logout Button */}
+            <button
+              className={styles.logoutButton()}
+              onClick={() => logoutFn()}
+              title="Sair"
+            >
+              <SignOutIcon
+                size={20}
+                weight="regular"
+                className={styles.logoutIcon()}
+              />
+            </button>
+          </>
+        ) : (
+          /* Usuário não logado */
+          <Link to="/sign-in">
+            <Button variant="primary" size="sm" className="!gap-1">
+              <SignInIcon size={17} weight="regular" />
+              Fazer Login
+            </Button>
+          </Link>
+        )}
       </div>
     </nav>
   )

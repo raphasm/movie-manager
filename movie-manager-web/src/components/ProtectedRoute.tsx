@@ -1,12 +1,20 @@
 import { Navigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  // Exemplo: verifica se existe token no localStorage
-  const isAuthenticated = Boolean(localStorage.getItem('token'))
+  const { isAuthenticated, isLoading } = useAuth()
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <span className="text-white">Carregando...</span>
+      </div>
+    )
+  }
 
   return isAuthenticated ? children : <Navigate to="/sign-in" replace />
 }

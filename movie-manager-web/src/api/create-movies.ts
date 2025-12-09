@@ -3,16 +3,25 @@ import { api } from '../utils/api'
 
 export interface CreateMoviesBody {
   title: string
-  filename: string
+  file: File
   year: string
-  category: Categories[]
+  category: Categories
+  description: string
 }
 
 export async function createMovies({
   title,
-  filename,
+  file,
   year,
   category,
+  description,
 }: CreateMoviesBody) {
-  await api.post(`/movies`, { title, filename, year, category })
+  const formData = new FormData()
+  formData.append('title', title)
+  formData.append('year', year)
+  formData.append('category', category)
+  formData.append('description', description)
+  formData.append('file', file)
+
+  await api.post('/movies', formData)
 }

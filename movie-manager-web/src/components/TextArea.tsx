@@ -10,6 +10,7 @@ const textAreaVariants = tv({
       'w-full bg-transparent border-none outline-none text-base leading-[1.5] text-white font-body placeholder:text-custom-text-placeholder resize-none',
     counterWrapper: 'flex justify-end',
     counter: 'text-sm leading-[1.6] font-body',
+    errorText: 'text-sm leading-[1.6] font-body text-custom-error',
   },
   variants: {
     error: {
@@ -41,17 +42,17 @@ interface TextAreaProps
   error?: boolean
   rows?: number
   showCounter?: boolean
+  errorMessage?: string
 }
 
 export function TextArea({
-  placeholder,
-  value = '',
-  onChange,
   error = false,
+  errorMessage,
   rows = 4,
-  maxLength,
   showCounter = false,
   className,
+  value,
+  maxLength,
   ...props
 }: TextAreaProps) {
   const currentLength = typeof value === 'string' ? value.length : 0
@@ -63,9 +64,7 @@ export function TextArea({
     <div className={styles.wrapper()}>
       <div className={styles.container()}>
         <textarea
-          placeholder={placeholder}
           value={value}
-          onChange={onChange}
           rows={rows}
           maxLength={maxLength}
           className={styles.textarea({ className })}
@@ -78,6 +77,9 @@ export function TextArea({
             {currentLength}/{maxLength}
           </span>
         </div>
+      )}
+      {error && errorMessage && (
+        <span className={styles.errorText()}>{errorMessage}</span>
       )}
     </div>
   )

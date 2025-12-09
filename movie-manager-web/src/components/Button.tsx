@@ -14,6 +14,7 @@ const buttonVariants = tv({
         'bg-transparent text-custom-purple-tab hover:bg-custom-bg-tab/50 active:bg-custom-bg-menu/80',
     },
     size: {
+      xm: 'px-1.5 py-1.5 text-sm',
       sm: 'px-3 py-2 text-sm',
       md: 'px-5 py-3 text-base',
       lg: 'px-6 py-4 text-lg',
