@@ -48,7 +48,7 @@ export const getMovieRoute: FastifyPluginAsyncZod = async (app) => {
           userId: evaluation.user_id,
           name: evaluation.user.name,
           rating: evaluation.rating ? Number(evaluation.rating) : null,
-          comment: evaluation.comment,
+          comment: evaluation.comment === '' ? null : evaluation.comment,
         })),
       }))
 
