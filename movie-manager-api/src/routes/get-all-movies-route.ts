@@ -1,6 +1,7 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 import { getAllMovies } from '../functions/get-all-movies'
+import { categoriesEnum } from '../interface/categories'
 import { getImageUrl } from '../utils/get-image-url'
 
 export const getAllMoviesRoute: FastifyPluginAsyncZod = async (app) => {
@@ -13,6 +14,7 @@ export const getAllMoviesRoute: FastifyPluginAsyncZod = async (app) => {
         querystring: z.object({
           query: z.string().optional(),
           page: z.coerce.number().min(1).default(1),
+          categories: categoriesEnum.optional(),
         }),
         response: {
           200: z.object({
@@ -22,7 +24,7 @@ export const getAllMoviesRoute: FastifyPluginAsyncZod = async (app) => {
                 id: z.string(),
                 title: z.string(),
                 year: z.string(),
-                category: z.string(),
+                category: categoriesEnum,
                 description: z.string(),
                 filename: z.string(),
                 imageUrl: z.string(),
@@ -38,9 +40,13 @@ export const getAllMoviesRoute: FastifyPluginAsyncZod = async (app) => {
       },
     },
     async (request, reply) => {
-      const { page, query } = request.query
+      const { page, query, categories } = request.query
 
-      const { movies, meta } = await getAllMovies({ page, query })
+      const { movies, meta } = await getAllMovies({
+        page,
+        query,
+        categories: categories ? [categories] : [],
+      })
 
       const formattedMovies = movies.map((movie) => ({
         ...movie,

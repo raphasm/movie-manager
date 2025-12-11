@@ -1,20 +1,5 @@
-import { z } from 'zod'
+import { categoriesEnum } from '../interface/categories'
 import { ParsedMovieData } from '../utils/parse-multipart-movie'
-
-export const categoriesEnum = z.enum([
-  'ACAO',
-  'AVENTURA',
-  'COMEDIA',
-  'DRAMA',
-  'DOCUMENTARIO',
-  'TERROR',
-  'SUSPENSE',
-  'FICCAO',
-  'ANIME',
-  'ROMANCE',
-])
-
-export type CategoryType = z.infer<typeof categoriesEnum>
 
 interface ValidationResult {
   success: boolean
