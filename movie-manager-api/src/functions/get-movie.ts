@@ -1,16 +1,17 @@
 import { prisma } from '../lib/prisma'
 
 interface GetMovieParams {
+  page: number
   movieId: string
 }
 
-export async function getMovie({ movieId }: GetMovieParams) {
-  const movie = await prisma.movie.findMany({
-    where: {
-      id: movieId,
-    },
+export async function getMovie({ movieId, page }: GetMovieParams) {
+  const movie = await prisma.movie.findUnique({
+    where: { id: movieId },
     include: {
       evaluations: {
+        take: 5,
+        skip: (page - 1) * 5,
         select: {
           comment: true,
           rating: true,
@@ -18,6 +19,7 @@ export async function getMovie({ movieId }: GetMovieParams) {
           user: {
             select: {
               name: true,
+              _count: { select: { evaluations: true } },
             },
           },
         },
@@ -29,7 +31,16 @@ export async function getMovie({ movieId }: GetMovieParams) {
     throw new Error('Movie not found.')
   }
 
+  const totalEvaluations = await prisma.evaluation.count({
+    where: { movie_id: movieId },
+  })
+
   return {
-    movie,
+    ...movie,
+    evaluationsMeta: {
+      page,
+      perPage: 5,
+      totalCount: totalEvaluations,
+    },
   }
 }
