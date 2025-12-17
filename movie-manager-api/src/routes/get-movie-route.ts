@@ -13,6 +13,9 @@ export const getMovieRoute: FastifyPluginAsyncZod = async (app) => {
         params: z.object({
           movieId: z.string(),
         }),
+        querystring: z.object({
+          page: z.coerce.number().min(1).default(1),
+        }),
         response: {
           200: z.object({
             id: z.string(),
@@ -27,32 +30,40 @@ export const getMovieRoute: FastifyPluginAsyncZod = async (app) => {
               z.object({
                 userId: z.string(),
                 name: z.string(),
+                evaluationsCount: z.number(),
                 rating: z.coerce.number().nullable(),
                 comment: z.string().nullable(),
               }),
             ),
+            evaluationsMeta: z.object({
+              page: z.number(),
+              perPage: z.number(),
+              totalCount: z.number(),
+            }),
           }),
         },
       },
     },
     async (request, reply) => {
       const { movieId } = request.params
+      const { page } = request.query
 
-      const { movie } = await getMovie({ movieId })
+      const movie = await getMovie({ movieId, page })
 
-      const movieMapped = movie.map((movies) => ({
-        ...movies,
-        imageUrl: getImageUrl(movies.filename),
-        averageRating: Number(movies.averageRating),
-        evaluations: movies.evaluations.map((evaluation) => ({
+      const mapped = {
+        ...movie,
+        imageUrl: getImageUrl(movie.filename),
+        averageRating: Number(movie.averageRating),
+        evaluations: movie.evaluations.map((evaluation) => ({
           userId: evaluation.user_id,
           name: evaluation.user.name,
+          evaluationsCount: evaluation.user._count.evaluations,
           rating: evaluation.rating ? Number(evaluation.rating) : null,
           comment: evaluation.comment === '' ? null : evaluation.comment,
         })),
-      }))
+      }
 
-      return reply.status(200).send(movieMapped[0])
+      return reply.status(200).send(mapped)
     },
   )
 }
