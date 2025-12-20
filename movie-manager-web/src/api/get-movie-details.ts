@@ -16,6 +16,7 @@ export interface GetMovieDetailsResponse {
     name: string
     rating?: number | null
     comment?: string | null
+    evaluationsCount?: number | null
   }[]
 }
 

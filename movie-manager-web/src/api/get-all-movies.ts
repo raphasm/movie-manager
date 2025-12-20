@@ -3,6 +3,7 @@ import { api } from '../utils/api'
 export interface getAllMoviesQuery {
   query?: string | null
   page?: number | null
+  categories?: string[]
 }
 
 export interface getAllMoviesResponse {
@@ -25,11 +26,17 @@ export interface getAllMoviesResponse {
   }
 }
 
-export async function getAllMovies({ query, page }: getAllMoviesQuery) {
+export async function getAllMovies({
+  query,
+  page,
+  categories,
+}: getAllMoviesQuery) {
   const response = await api.get<getAllMoviesResponse>('/movies', {
     params: {
       query,
       page,
+      categories:
+        categories && categories.length > 0 ? categories[0] : undefined,
     },
   })
 
