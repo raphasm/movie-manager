@@ -229,7 +229,6 @@ VITE_IMAGES_URL=     # URL base para imagens
 - Um componente por arquivo
 - Interfaces no mesmo arquivo do componente
 - API calls em `/src/api/`
-- Evitar `any`, sempre tipar com TypeScript
 
 ## 📚 Documentação Adicional
 
@@ -269,10 +268,6 @@ VITE_IMAGES_URL=     # URL base para imagens
 3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
 4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
-
-## 📝 Licença
-
-Este projeto está sob a licença MIT.
 
 ---
 

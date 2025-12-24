@@ -81,7 +81,7 @@ export function Badge({
     admin: ShieldCheckIcon,
     moderator: ShieldCheckIcon,
     vip: CrownIcon,
-    you: StarIcon,
+    you: CrownIcon,
   }[variant || 'you']
 
   return (
@@ -97,7 +97,29 @@ export function Badge({
 /**
  * Badge específico para Admin com ícone de escudo
  */
-export function AdminBadge({ size }: { size?: 'sm' | 'md' | 'lg' }) {
+export function AdminBadge({
+  size = 'md',
+  iconOnly = false,
+}: {
+  size?: 'sm' | 'md' | 'lg'
+  iconOnly?: boolean
+}) {
+  if (iconOnly) {
+    const shieldSize = {
+      sm: 16,
+      md: 18,
+      lg: 20,
+    }[size]
+
+    return (
+      <ShieldCheckIcon
+        size={shieldSize}
+        weight="duotone"
+        className="text-amber-600"
+      />
+    )
+  }
+
   return (
     <Badge variant="admin" size={size} showIcon>
       Admin
@@ -111,7 +133,7 @@ export function AdminBadge({ size }: { size?: 'sm' | 'md' | 'lg' }) {
 export function YouBadge({ size }: { size?: 'sm' | 'md' | 'lg' }) {
   return (
     <Badge variant="you" size={size}>
-      Você
+      você
     </Badge>
   )
 }

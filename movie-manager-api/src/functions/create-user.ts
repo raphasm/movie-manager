@@ -8,16 +8,25 @@ interface CreateUserParams {
 }
 
 export async function createUser({ name, email, password }: CreateUserParams) {
-  const userWithTheSameEmail = await prisma.user.findUnique({
+  // Busca em uma única query se existe email OU nome já cadastrado
+  const existingUser = await prisma.user.findFirst({
     where: {
-      email,
+      OR: [{ email }, { name }],
+    },
+    select: {
+      email: true,
+      name: true,
     },
   })
 
-  if (userWithTheSameEmail) {
-    throw new Error(
-      'Erro ao criar conta. Este e-mail pode já estar cadastrado.',
-    )
+  if (existingUser) {
+    // Prioriza erro de email se ambos forem duplicados
+    if (existingUser.email === email) {
+      throw new Error('Erro ao criar conta. Este e-mail já esta cadastrado.')
+    }
+    if (existingUser.name === name) {
+      throw new Error('Nome de usuário já existente, use outro nome')
+    }
   }
 
   const hashedPassword = await hash(password, 8)

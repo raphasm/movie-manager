@@ -1,16 +1,12 @@
 import * as RadixAvatar from '@radix-ui/react-avatar'
-import type React from 'react'
+import React from 'react'
 import { tv, type VariantProps } from 'tailwind-variants'
 
-// Estilos do Avatar usando tailwind-variants
 const avatarStyles = tv({
   slots: {
-    // Container externo - borda com gradiente roxo vibrante
     root: 'inline-flex items-center justify-center p-[1.7px] select-none bg-gradient-to-b from-purple-400 via-purple-600 to-purple-800',
-    // Área interna com fundo escuro
     inner: 'flex items-center justify-center bg-custom-bg-menu w-full h-full',
     image: 'h-full w-full object-cover',
-    // Fallback para o ícone - cor roxa suave
     fallback: 'flex h-full w-full items-center justify-center text-purple-400',
   },
   variants: {
@@ -66,13 +62,13 @@ interface AvatarProps extends AvatarVariants {
  * // Com ícone de fallback
  * <Avatar icon={<User size={20} />} shape="square" />
  */
-export function Avatar({
+export const Avatar = React.memo(function Avatar({
   src,
-  alt = '',
+  alt,
   icon,
   size,
   shape,
-  className = '',
+  className,
 }: AvatarProps) {
   const {
     root,
@@ -83,7 +79,6 @@ export function Avatar({
 
   return (
     <RadixAvatar.Root className={root({ className })}>
-      {/* SVG com definição do gradiente para o ícone */}
       <svg width="0" height="0" className="absolute">
         <defs>
           <linearGradient
@@ -100,21 +95,18 @@ export function Avatar({
         </defs>
       </svg>
 
-      {/* Container interno com fundo escuro */}
       <div className={inner()}>
-        {/* Imagem do avatar - carrega de forma assíncrona */}
         <RadixAvatar.Image src={src} alt={alt} className={image()} />
 
         {/* Fallback - exibido enquanto a imagem carrega ou se falhar */}
-        <RadixAvatar.Fallback delayMs={600} className={fallbackStyle()}>
+        <RadixAvatar.Fallback delayMs={0} className={fallbackStyle()}>
           {icon}
         </RadixAvatar.Fallback>
       </div>
     </RadixAvatar.Root>
   )
-}
+})
 
-// Estilos do AvatarGroup usando tailwind-variants
 const avatarGroupStyles = tv({
   slots: {
     container: 'flex -space-x-2',
@@ -162,7 +154,6 @@ export function AvatarGroup({ children, max = 3, size }: AvatarGroupProps) {
     <div className={container()}>
       {visibleChildren}
 
-      {/* Mostra contador se houver mais avatares do que o máximo */}
       {remainingCount > 0 && <div className={counter()}>+{remainingCount}</div>}
     </div>
   )

@@ -18,9 +18,30 @@ export interface GetMovieDetailsResponse {
     comment?: string | null
     evaluationsCount?: number | null
   }[]
+
+  evaluationsMeta: {
+    page: number
+    perPage: number
+    totalCount: number
+  }
 }
 
-export async function getMovieDetails(movieId: string) {
-  const response = await api.get<GetMovieDetailsResponse>(`/movies/${movieId}`)
+interface GetMovieDetailsParams {
+  movieId: string
+  page?: number
+  perPage?: number
+}
+
+export async function getMovieDetails({
+  movieId,
+  page = 1,
+  perPage = 5,
+}: GetMovieDetailsParams) {
+  const response = await api.get<GetMovieDetailsResponse>(
+    `/movies/${movieId}`,
+    {
+      params: { page, perPage },
+    },
+  )
   return response.data
 }

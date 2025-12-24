@@ -18,7 +18,7 @@ const inputVariants = tv({
         container: 'px-3 py-2 text-sm',
       },
       md: {
-        container: 'px-4 py-3 text-base',
+        container: 'px-4 py-2.5 text-base',
       },
       lg: {
         container: 'px-5 py-4 text-lg',
