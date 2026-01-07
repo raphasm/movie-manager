@@ -19,8 +19,8 @@ import { useMutation } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
 const signUpFormSchema = z.object({
-  name: z.string().min(1, 'Nome é obrigatório'),
-  email: z.email('E-mail é obrigatório'),
+  name: z.string().trim().min(1, 'Nome é obrigatório'),
+  email: z.string().trim().email('E-mail inválido'),
   password: z.string().min(6, 'A senha deve conter pelo menos 6 caracteres'),
 })
 
@@ -55,9 +55,7 @@ export function SignUp() {
       navigate('/sign-in')
     } catch (error) {
       if (error instanceof AxiosError) {
-        const errorMessage =
-          error.response?.data?.message ||
-          'Esse e-mail já está cadastrado. Use outro e-mail para fazer o login'
+        const errorMessage = error.response?.data?.message
 
         form.setError('root', {
           message: errorMessage,

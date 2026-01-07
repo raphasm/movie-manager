@@ -7,7 +7,12 @@ export function DashboardLayout() {
 
   return (
     <div className="min-h-screen bg-gray-darkest">
-      <Navbar activeMenu="dashboard" currentUserId={user?.name} />
+      <Navbar
+        activeMenu="dashboard"
+        currentUserId={user?.name}
+        userEmail={user?.email}
+        userAvatar={user?.imageUrl}
+      />
       <Outlet />
     </div>
   )

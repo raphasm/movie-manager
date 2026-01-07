@@ -7,7 +7,12 @@ export function MyMoviesLayout() {
 
   return (
     <div className="min-h-screen bg-gray-darkest">
-      <Navbar activeMenu="my-movies" currentUserId={user?.name} />
+      <Navbar
+        activeMenu="my-movies"
+        currentUserId={user?.name}
+        userEmail={user?.email}
+        userAvatar={user?.imageUrl}
+      />
       <Outlet />
     </div>
   )

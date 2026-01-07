@@ -14,7 +14,7 @@ import { AxiosError } from 'axios'
 import { useQueryClient } from '@tanstack/react-query'
 
 const signInFormSchema = z.object({
-  email: z.email('E-mail é obrigatório'),
+  email: z.string().trim().email('E-mail inválido'),
   password: z.string().min(1, 'Senha é obrigatória'),
 })
 
@@ -41,9 +41,7 @@ export function SignIn() {
       navigate('/home')
     } catch (error) {
       if (error instanceof AxiosError) {
-        const errorMessage =
-          error.response?.data?.message ||
-          'E-mail ou senha incorretos. Verifique suas credenciais e tente novamente.'
+        const errorMessage = error.response?.data?.message
         form.setError('root', {
           message: errorMessage,
         })
