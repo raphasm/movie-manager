@@ -52,6 +52,9 @@ model Movie {
   user_id     String
   evaluations Evaluation[]
 
+  @@index([user_id])
+  @@index([category])
+  @@index([averageRating])
   @@map("movies")
 }
 
@@ -67,5 +70,7 @@ model Evaluation {
   movie_id String
   user_id  String
 
+  @@index([movie_id])
+  @@index([user_id])
   @@map("evaluations")
 }
