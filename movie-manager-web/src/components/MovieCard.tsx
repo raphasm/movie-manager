@@ -3,7 +3,7 @@ import { tv, type VariantProps } from 'tailwind-variants'
 import { Link } from 'react-router-dom'
 import { IconButton } from './IconButton'
 import { FavoritesContext } from '../contexts/FavoritesContext'
-import { useContext, useState } from 'react'
+import { useContext, useState, memo } from 'react'
 import { toast } from 'sonner'
 import { useAuth } from '../contexts/AuthContext'
 import { LoginRequiredModal } from './LoginRequiredModal'
@@ -76,7 +76,7 @@ export interface MovieCardProps extends VariantProps<typeof movieCardVariants> {
   showRating?: boolean
 }
 
-export function MovieCard({
+export const MovieCard = memo(function MovieCard({
   id,
   title,
   category,
@@ -193,4 +193,4 @@ export function MovieCard({
       />
     </>
   )
-}
+})
