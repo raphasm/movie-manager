@@ -5,7 +5,7 @@ interface GetEvaluationsParams {
 }
 
 export async function getEvaluations({ movieId }: GetEvaluationsParams) {
-  const evaluations = await prisma.movie.findMany({
+  const movie = await prisma.movie.findUnique({
     where: {
       id: movieId,
     },
@@ -24,7 +24,11 @@ export async function getEvaluations({ movieId }: GetEvaluationsParams) {
     },
   })
 
+  if (!movie) {
+    throw new Error('Movie not found.')
+  }
+
   return {
-    evaluations,
+    movie,
   }
 }
