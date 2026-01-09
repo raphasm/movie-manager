@@ -1,5 +1,5 @@
 - [] Refatorar o back end e tirar a rota getEvaluations
-- [] criar paginação para evaluations com 5 items por página
+- [x] criar paginação para evaluations com 5 items por página
 - [] Adicionar As avaliações "Evaluations" e comentários quando vc busca um filme pelo id
 - [x] Adicionar quantos filmes o usuário avaliou
 - [x] Poder buscar os filmes por categoria

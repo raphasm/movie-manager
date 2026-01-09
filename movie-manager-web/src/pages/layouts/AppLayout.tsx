@@ -11,7 +11,12 @@ export function AppLayout() {
 
   return (
     <div className="min-h-screen bg-gray-darkest">
-      <Navbar activeMenu={activeMenu} currentUserId={user?.name} />
+      <Navbar
+        activeMenu={activeMenu}
+        currentUserId={user?.name}
+        userEmail={user?.email}
+        userAvatar={user?.imageUrl}
+      />
       <Outlet />
     </div>
   )

@@ -36,11 +36,12 @@ export async function createEvaluations({
     by: ['movie_id'],
     _avg: { rating: true },
     where: {
+      movie_id: movieId,
       rating: { not: null },
     },
   })
 
-  const ratingGroup = ratings.find((rating) => rating.movie_id === movieId)
+  const ratingGroup = ratings[0]
 
   const average =
     ratingGroup && ratingGroup._avg.rating
