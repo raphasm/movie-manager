@@ -29,6 +29,6 @@ export async function getEvaluations({ movieId }: GetEvaluationsParams) {
   }
 
   return {
-    evaluations: [movie],
+    movie,
   }
 }

@@ -37,7 +37,7 @@ export function FavoritesProvider({ children }: FavoriteProviderProps) {
 
   const value = useMemo(
     () => ({ favorites, addFavorite, removeFavorite, isFavorite }),
-    [favorites, addFavorite, removeFavorite, isFavorite]
+    [favorites, addFavorite, removeFavorite]
   )
 
   return (

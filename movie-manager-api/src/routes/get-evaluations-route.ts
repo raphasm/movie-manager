@@ -39,9 +39,9 @@ export const getEvaluationsRoute: FastifyPluginAsyncZod = async (app) => {
     async (request, reply) => {
       const { movieId } = request.params
 
-      const { evaluations } = await getEvaluations({ movieId })
+      const { movie } = await getEvaluations({ movieId })
 
-      const mappedEvaluations = evaluations.map((movie) => ({
+      const mappedMovie = {
         id: movie.id,
         title: movie.title,
         year: movie.year,
@@ -54,9 +54,9 @@ export const getEvaluationsRoute: FastifyPluginAsyncZod = async (app) => {
           rating: Number(evaluation.rating),
           comment: evaluation.comment,
         })),
-      }))
+      }
 
-      return reply.status(200).send(mappedEvaluations)
+      return reply.status(200).send([mappedMovie])
     },
   )
 }
