@@ -15,24 +15,22 @@ export const getEvaluationsRoute: FastifyPluginAsyncZod = async (app) => {
           movieId: z.string(),
         }),
         response: {
-          200: z.array(
-            z.object({
-              id: z.string(),
-              title: z.string(),
-              year: z.string(),
-              category: z.string(),
-              description: z.string(),
-              filename: z.string(),
-              averageRating: z.coerce.number(),
-              evaluations: z.array(
-                z.object({
-                  name: z.string(),
-                  rating: z.number().nullable(),
-                  comment: z.string().nullable(),
-                }),
-              ),
-            }),
-          ),
+          200: z.object({
+            id: z.string(),
+            title: z.string(),
+            year: z.string(),
+            category: z.string(),
+            description: z.string(),
+            filename: z.string(),
+            averageRating: z.coerce.number(),
+            evaluations: z.array(
+              z.object({
+                name: z.string(),
+                rating: z.number().nullable(),
+                comment: z.string().nullable(),
+              }),
+            ),
+          }),
         },
       },
     },
@@ -56,7 +54,7 @@ export const getEvaluationsRoute: FastifyPluginAsyncZod = async (app) => {
         })),
       }
 
-      return reply.status(200).send([mappedMovie])
+      return reply.status(200).send(mappedMovie)
     },
   )
 }
