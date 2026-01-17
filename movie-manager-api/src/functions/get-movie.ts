@@ -6,9 +6,18 @@ interface GetMovieParams {
 }
 
 export async function getMovie({ movieId, page }: GetMovieParams) {
+  // Otimização: Usar select específico ao invés de trazer todos os campos
+  // Isso reduz a quantidade de dados transferidos do banco
   const movie = await prisma.movie.findUnique({
     where: { id: movieId },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      year: true,
+      category: true,
+      description: true,
+      filename: true,
+      averageRating: true,
       evaluations: {
         take: 5,
         skip: (page - 1) * 5,
@@ -19,10 +28,14 @@ export async function getMovie({ movieId, page }: GetMovieParams) {
           user: {
             select: {
               name: true,
+              imageUrl: true,
+              // Otimização: _count é custoso, considere cachear ou remover se não essencial
               _count: { select: { evaluations: true } },
             },
           },
         },
+        // Ordenar por data mais recente para melhor UX
+        orderBy: { created_at: 'desc' },
       },
     },
   })
@@ -31,6 +44,8 @@ export async function getMovie({ movieId, page }: GetMovieParams) {
     throw new Error('Movie not found.')
   }
 
+  // Otimização: Contar apenas quando necessário
+  // Considere cachear este valor se o total não muda frequentemente
   const totalEvaluations = await prisma.evaluation.count({
     where: { movie_id: movieId },
   })

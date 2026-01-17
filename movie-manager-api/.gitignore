@@ -3,3 +3,8 @@ node_modules
 /src/generated/prisma
 tmp
 tasks
+/tmp/*
+/scripts/*
+FRONTEND_EXAMPLE.md
+MONITORING_GUIDE.md 
+PERFORMANCE_GUIDE.md

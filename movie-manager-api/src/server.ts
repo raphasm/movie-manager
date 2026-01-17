@@ -1,4 +1,5 @@
 import fastifyCookie from '@fastify/cookie'
+import cors from '@fastify/cors'
 import fastifyJwt from '@fastify/jwt'
 import fastifyMultipart from '@fastify/multipart'
 import fastifySwagger from '@fastify/swagger'
@@ -12,25 +13,30 @@ import {
 } from 'fastify-type-provider-zod'
 import uploadConfig from './configs/upload'
 import { env } from './env'
+import { createUserRoute } from './routes/create-user-route'
+
+import fastifyStatic from '@fastify/static'
 import { authenticateRoute } from './routes/authenticate-route'
 import { createEvaluationsRoute } from './routes/create-evaluations-route'
 import { createMoviesRoute } from './routes/create-movies-route'
-import { createUserRoute } from './routes/create-user-route'
+import { editProfileRoute } from './routes/edit-profile-route'
+import { getAllMoviesRoute } from './routes/get-all-movies-route'
 import { getEvaluationsRoute } from './routes/get-evaluations-route'
 import { getMovieByTitleRoute } from './routes/get-movie-by-title-route'
 import { getMovieRoute } from './routes/get-movie-route'
 import { getMoviesByCategoriesRoute } from './routes/get-movies-by-categories-route'
 import { getMyMoviesRoute } from './routes/get-my-movies-route'
-import { ratingsRoute } from './routes/ratings-route'
-import { uploadsFileRoute } from './routes/upload-file-route'
-
-import cors from '@fastify/cors'
-import fastifyStatic from '@fastify/static'
-import { getAllMoviesRoute } from './routes/get-all-movies-route'
 import { getProfileRoute } from './routes/get-profile-route'
 import { logoutRoute } from './routes/logout-route'
+import { ratingsRoute } from './routes/ratings-route'
+import { uploadFileRoute } from './routes/upload-file-route'
+// import { performanceMonitor } from './middlewares/performance-monitor'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
+
+// TODO: OPCIONAL: Habilitar monitoramento de performance
+// Descomente para ver tempo de resposta de cada rota
+// app.addHook('onRequest', performanceMonitor)
 
 app.register(cors, {
   origin: 'http://localhost:5173',
@@ -88,6 +94,11 @@ app.register(fastifySwaggerUi, {
   },
 })
 
+app.listen({ port: env.PORT }).then(() => {
+  console.log('HTTP server running!')
+})
+
+app.register(uploadFileRoute)
 app.register(createUserRoute)
 app.register(authenticateRoute)
 app.register(createMoviesRoute)
@@ -97,12 +108,10 @@ app.register(getMovieByTitleRoute)
 app.register(createEvaluationsRoute)
 app.register(getEvaluationsRoute)
 app.register(ratingsRoute)
-app.register(uploadsFileRoute)
+// app.register(uploadFileRoute)
 app.register(getMoviesByCategoriesRoute)
 app.register(getAllMoviesRoute)
 app.register(getProfileRoute)
+app.register(editProfileRoute)
+// app.register(uploadProfilePictureRoute)
 app.register(logoutRoute)
-
-app.listen({ port: env.PORT }).then(() => {
-  console.log('HTTP server running!')
-})

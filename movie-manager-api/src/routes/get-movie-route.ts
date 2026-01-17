@@ -30,6 +30,7 @@ export const getMovieRoute: FastifyPluginAsyncZod = async (app) => {
               z.object({
                 userId: z.string(),
                 name: z.string(),
+                imageUrl: z.string().nullable(),
                 evaluationsCount: z.number(),
                 rating: z.coerce.number().nullable(),
                 comment: z.string().nullable(),
@@ -59,6 +60,9 @@ export const getMovieRoute: FastifyPluginAsyncZod = async (app) => {
           name: evaluation.user.name,
           evaluationsCount: evaluation.user._count.evaluations,
           rating: evaluation.rating ? Number(evaluation.rating) : null,
+          imageUrl: evaluation.user.imageUrl
+            ? getImageUrl(evaluation.user.imageUrl)
+            : null,
           comment: evaluation.comment === '' ? null : evaluation.comment,
         })),
       }
@@ -67,37 +71,3 @@ export const getMovieRoute: FastifyPluginAsyncZod = async (app) => {
     },
   )
 }
-
-// {
-//   id: movie,
-//   title: movie.title,
-//   year: movie.year,
-//   category: movie.category,
-//   description: movie.description,
-//   filename: movie.filename,
-//   averageRating: movie.averageRating,
-//   evaluations: movie.evaluations.map((evaluation) => ({
-//     rating: evaluation.rating,
-//     comment: evaluation.comment,
-//     name: evaluation.user.name,
-//   })),
-// },
-
-// 200: z.array(
-//             z.object({
-//               id: z.string(),
-//               title: z.string(),
-//               year: z.string(),
-//               category: z.string(),
-//               description: z.string(),
-//               filename: z.string(),
-//               averageRating: z.number().nullable(),
-//               evaluations: z.array(
-//                 z.object({
-//                   name: z.string(),
-//                   rating: z.number().nullable(),
-//                   comment: z.string().nullable(),
-//                 }),
-//               ),
-//             }),
-//           ),

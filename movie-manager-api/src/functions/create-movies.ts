@@ -1,45 +1,61 @@
+import { MultipartFile } from '@fastify/multipart'
 import { Categories } from '@prisma/client'
 import { prisma } from '../lib/prisma'
+import { DiskStorage } from '../providers/disk-storage'
 
-interface CreateMovieParams {
+interface CreateMovieRequest {
   title: string
   year: string
-  category: Categories
+  category: string
   description: string
-  filename: string
-  user_id: string
+  fileData: MultipartFile
+  userId: string
 }
 
-export async function createMovies({
+export async function createMovie({
   title,
   year,
   category,
   description,
-  filename,
-  user_id,
-}: CreateMovieParams) {
+  fileData,
+  userId,
+}: CreateMovieRequest) {
+  // Validação dos dados
+  if (!title || !year || !category || !description) {
+    throw new Error('Todos os campos são obrigatórios')
+  }
+
+  if (!fileData) {
+    throw new Error('Imagem é obrigatória')
+  }
+
+  // Verifica se o usuário existe
   const user = await prisma.user.findUnique({
-    where: {
-      id: user_id,
-    },
+    where: { id: userId },
   })
 
   if (!user) {
-    throw new Error('user not found')
+    throw new Error('Usuário não encontrado')
   }
+  const diskStorage = new DiskStorage()
 
-  const movies = await prisma.movie.create({
+  // Faz o upload do arquivo
+  const fileInfo = await diskStorage.uploadFile(fileData)
+
+  // Move o arquivo para a pasta de uploads
+  await diskStorage.saveFile(fileInfo.filename)
+
+  // Cria o filme no banco de dados
+  const movie = await prisma.movie.create({
     data: {
       title,
       year,
-      category,
+      category: category as Categories,
       description,
-      filename,
-      user_id,
+      filename: fileInfo.filename,
+      user_id: userId,
     },
   })
 
-  return {
-    movies,
-  }
+  return { movieId: movie.id }
 }

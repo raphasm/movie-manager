@@ -47,6 +47,7 @@ model Movie {
   description   String
   filename      String
   averageRating Decimal?   @default(0) @db.Decimal(2, 1)
+  createdAt     DateTime   @default(now()) @map("created_at")
 
   user        User         @relation(fields: [user_id], references: [id])
   user_id     String
