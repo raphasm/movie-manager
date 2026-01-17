@@ -1,3 +1,4 @@
+import { AppError } from '../error/app-error'
 import { prisma } from '../lib/prisma'
 
 interface GetProfileParams {
@@ -19,7 +20,7 @@ export async function getProfile({ userId }: GetProfileParams) {
   })
 
   if (!user) {
-    throw new Error('User not found.')
+    throw new AppError('User not found.', 404)
   }
 
   return {

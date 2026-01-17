@@ -29,8 +29,6 @@ import { getMyMoviesRoute } from './routes/get-my-movies-route'
 import { getProfileRoute } from './routes/get-profile-route'
 import { logoutRoute } from './routes/logout-route'
 import { ratingsRoute } from './routes/ratings-route'
-import { uploadFileRoute } from './routes/upload-file-route'
-// import { performanceMonitor } from './middlewares/performance-monitor'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
@@ -98,7 +96,6 @@ app.listen({ port: env.PORT }).then(() => {
   console.log('HTTP server running!')
 })
 
-app.register(uploadFileRoute)
 app.register(createUserRoute)
 app.register(authenticateRoute)
 app.register(createMoviesRoute)

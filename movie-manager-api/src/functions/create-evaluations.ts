@@ -1,3 +1,4 @@
+import { AppError } from '../error/app-error'
 import { prisma } from '../lib/prisma'
 
 interface CreateEvaluationsParams {
@@ -20,7 +21,7 @@ export async function createEvaluations({
   })
 
   if (!movie) {
-    throw new Error('Movie not found.')
+    throw new AppError('Movie not found.', 404)
   }
 
   const evaluation = await prisma.evaluation.create({

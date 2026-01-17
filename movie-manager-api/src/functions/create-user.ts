@@ -1,4 +1,5 @@
 import { hash } from 'bcryptjs'
+import { AppError } from '../error/app-error'
 import { prisma } from '../lib/prisma'
 
 interface CreateUserParams {
@@ -22,10 +23,13 @@ export async function createUser({ name, email, password }: CreateUserParams) {
   if (existingUser) {
     // Prioriza erro de email se ambos forem duplicados
     if (existingUser.email === email) {
-      throw new Error('Erro ao criar conta. Este e-mail já esta cadastrado.')
+      throw new AppError(
+        'Erro ao criar conta. Este e-mail já esta cadastrado.',
+        409,
+      )
     }
     if (existingUser.name === name) {
-      throw new Error('Nome de usuário já existente, use outro nome')
+      throw new AppError('Nome de usuário já existente, use outro nome', 409)
     }
   }
 

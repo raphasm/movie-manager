@@ -1,4 +1,5 @@
 import { MultipartFile } from '@fastify/multipart'
+import { AppError } from '../error/app-error'
 import { prisma } from '../lib/prisma'
 import { DiskStorage } from '../providers/disk-storage'
 
@@ -20,7 +21,7 @@ export async function editProfile({
   })
 
   if (!currentUser) {
-    throw new Error('Usuário não encontrado')
+    throw new AppError('Usuário não encontrado', 404)
   }
 
   const updateData: Record<string, string> = {}
@@ -35,7 +36,7 @@ export async function editProfile({
       })
 
       if (nameExists) {
-        throw new Error('Nome já está em uso')
+        throw new AppError('Nome já está em uso', 409)
       }
 
       updateData.name = trimmedName
@@ -52,7 +53,7 @@ export async function editProfile({
       })
 
       if (emailExists) {
-        throw new Error('Email já está em uso')
+        throw new AppError('Email já está em uso', 409)
       }
 
       updateData.email = trimmedEmail

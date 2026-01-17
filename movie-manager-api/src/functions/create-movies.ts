@@ -1,5 +1,6 @@
 import { MultipartFile } from '@fastify/multipart'
 import { Categories } from '@prisma/client'
+import { AppError } from '../error/app-error'
 import { prisma } from '../lib/prisma'
 import { DiskStorage } from '../providers/disk-storage'
 
@@ -22,11 +23,11 @@ export async function createMovie({
 }: CreateMovieRequest) {
   // Validação dos dados
   if (!title || !year || !category || !description) {
-    throw new Error('Todos os campos são obrigatórios')
+    throw new AppError('Todos os campos são obrigatórios', 400)
   }
 
   if (!fileData) {
-    throw new Error('Imagem é obrigatória')
+    throw new AppError('Imagem é obrigatória', 400)
   }
 
   // Verifica se o usuário existe
@@ -35,7 +36,7 @@ export async function createMovie({
   })
 
   if (!user) {
-    throw new Error('Usuário não encontrado')
+    throw new AppError('Usuário não encontrado', 404)
   }
   const diskStorage = new DiskStorage()
 

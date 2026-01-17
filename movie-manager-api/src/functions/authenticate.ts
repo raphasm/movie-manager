@@ -1,4 +1,5 @@
 import { compare } from 'bcryptjs'
+import { AppError } from '../error/app-error'
 import { prisma } from '../lib/prisma'
 
 interface AuthenticateParams {
@@ -14,13 +15,13 @@ export async function authenticate({ email, password }: AuthenticateParams) {
   })
 
   if (!user) {
-    throw new Error('Credenciais invalidas.')
+    throw new AppError('Credenciais invalidas.', 401)
   }
 
   const doesPasswordMatch = await compare(password, user.password)
 
   if (!doesPasswordMatch) {
-    throw new Error('Credenciais invalidas.')
+    throw new AppError('Credenciais invalidas.', 401)
   }
 
   return {

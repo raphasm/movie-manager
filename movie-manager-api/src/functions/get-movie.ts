@@ -1,3 +1,4 @@
+import { AppError } from '../error/app-error'
 import { prisma } from '../lib/prisma'
 
 interface GetMovieParams {
@@ -34,14 +35,13 @@ export async function getMovie({ movieId, page }: GetMovieParams) {
             },
           },
         },
-        // Ordenar por data mais recente para melhor UX
         orderBy: { created_at: 'desc' },
       },
     },
   })
 
   if (!movie) {
-    throw new Error('Movie not found.')
+    throw new AppError('Movie not found.', 404)
   }
 
   // Otimização: Contar apenas quando necessário
