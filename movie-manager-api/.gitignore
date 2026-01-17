@@ -4,7 +4,7 @@ node_modules
 tmp
 tasks
 /tmp/*
-/scripts/*
+/src/scripts/*
 FRONTEND_EXAMPLE.md
 MONITORING_GUIDE.md 
 PERFORMANCE_GUIDE.md
