@@ -33,9 +33,7 @@ export const getMyMoviesRoute: FastifyPluginAsyncZod = async (app) => {
             meta: z.object({
               pageIndex: z.number(),
               perPage: z.number(),
-              totalCount: z.object({
-                count: z.number(),
-              }),
+              totalCount: z.number(),
             }),
           }),
         },
@@ -56,9 +54,7 @@ export const getMyMoviesRoute: FastifyPluginAsyncZod = async (app) => {
       const formattedMeta = {
         pageIndex: page,
         perPage: meta.perPage,
-        totalCount: {
-          count: meta.totalCount,
-        },
+        totalCount: meta.totalCount,
       }
 
       return reply

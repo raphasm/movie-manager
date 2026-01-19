@@ -46,7 +46,6 @@ export async function createMovie({
   // Move o arquivo para a pasta de uploads
   await diskStorage.saveFile(fileInfo.filename)
 
-  // Cria o filme no banco de dados
   const movie = await prisma.movie.create({
     data: {
       title,

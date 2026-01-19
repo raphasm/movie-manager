@@ -16,9 +16,11 @@ import { env } from './env'
 import { createUserRoute } from './routes/create-user-route'
 
 import fastifyStatic from '@fastify/static'
+import { addToMyMoviesRoute } from './routes/add-to-my-movies-route'
 import { authenticateRoute } from './routes/authenticate-route'
 import { createEvaluationsRoute } from './routes/create-evaluations-route'
 import { createMoviesRoute } from './routes/create-movies-route'
+import { deleteMyMoviesRoute } from './routes/delete-my-movies-route'
 import { editProfileRoute } from './routes/edit-profile-route'
 import { getAllMoviesRoute } from './routes/get-all-movies-route'
 import { getEvaluationsRoute } from './routes/get-evaluations-route'
@@ -96,11 +98,13 @@ app.listen({ port: env.PORT }).then(() => {
   console.log('HTTP server running!')
 })
 
+app.register(deleteMyMoviesRoute)
 app.register(createUserRoute)
 app.register(authenticateRoute)
 app.register(createMoviesRoute)
 app.register(getMovieRoute)
 app.register(getMyMoviesRoute)
+app.register(addToMyMoviesRoute)
 app.register(getMovieByTitleRoute)
 app.register(createEvaluationsRoute)
 app.register(getEvaluationsRoute)
