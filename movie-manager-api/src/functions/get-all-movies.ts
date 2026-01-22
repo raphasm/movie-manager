@@ -1,5 +1,6 @@
 import { Categories } from '@prisma/client'
 import { prisma } from '../lib/prisma'
+import { getImageUrl } from '../utils/get-image-url'
 
 interface GetAllMoviesParams {
   page: number
@@ -36,10 +37,17 @@ export async function getAllMovies({
     prisma.movie.count({ where }),
   ])
 
+  // Formatar dados dos filmes
+  const formattedMovies = movies.map((movie) => ({
+    ...movie,
+    averageRating: movie.averageRating ? Number(movie.averageRating) : null,
+    imageUrl: getImageUrl(movie.filename),
+  }))
+
   return {
-    movies,
+    movies: formattedMovies,
     meta: {
-      page,
+      pageIndex: page,
       perPage: 10,
       totalCount,
     },

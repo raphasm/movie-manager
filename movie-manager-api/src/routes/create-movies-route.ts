@@ -1,10 +1,9 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
-import { createMovieWithUpload } from '../functions/create-movie-with-upload'
+import { createMovie } from '../functions/create-movies'
 import { verifyJwt } from '../middlewares/verify-jwt'
 import { verifyUserRole } from '../middlewares/verify-user-role'
 import { parseMultipartMovie } from '../utils/parse-multipart-movie'
-import { validateMovieData } from '../validators/movie-validator'
 
 export const createMoviesRoute: FastifyPluginAsyncZod = async (app) => {
   app.post(
@@ -32,17 +31,9 @@ export const createMoviesRoute: FastifyPluginAsyncZod = async (app) => {
       }
 
       try {
-        // Parse dos dados do multipart
         const movieData = await parseMultipartMovie(request)
 
-        // Validação dos dados
-        const validation = validateMovieData(movieData)
-        if (!validation.success) {
-          return reply.status(400).send({ error: validation.error! })
-        }
-
-        // Cria o filme com upload da imagem
-        const { movieId } = await createMovieWithUpload({
+        const { movieId } = await createMovie({
           title: movieData.title,
           year: movieData.year,
           category: movieData.category,
